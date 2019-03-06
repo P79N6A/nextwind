@@ -1,0 +1,145 @@
+模板变量的输出默认是会被编译的，即以'''text'''的方式输出，如果希望直接输出'''html'''则需要在输出的变量后添加输出属性''''html'''';比如：
+<pre>{$content|html}</pre>
+
+==输出标签：变量输出==
+变量输出是最常用的方式，输出变量就需要注册变量，先来看下如何在controller中注册一个变量输出到模板
+<pre>
+class IndexController extends WindController {
+	public function run() {
+		$this->setOutput('模板标签教程', 'title') ;  //注册变量title,其值为:'模板标签教程'
+		$var = array();
+		$var['team'] = 'windFramework';
+		$var['time'] = date('Y-m-d');
+		$this->setOutput($var); //批量注册变量，分别注册了变量$team和$time在模板中
+		$var1 = array();
+		$var1['name'] = 'WindFramework';
+		$var1['info'] = '如风般温和，如风般疯狂，如风般清爽，如风般迅速';
+		$this->setOutput($var1, 'info');//注册一个数组变量$info到模板中
+	}
+}
+</pre>
+输出的标签支持可以如下：
+<pre>
+{$title} //输出一个变量
+<!--{echo $title}--> //输出一个变量
+<!--#echo $title#-->
+<?php echo $title>   //也支持原生态的输出方式
+</pre>
+以上的注册的变量可以在输出模板中如下方式输出：
+<source lang="html4strict">
+<html>
+<body>
+<p align='center'>{$title}</p>
+<p align='center'>{$team}|{$time}</p>
+<p>{$info['name']}:{$info['info']}</p>
+
+<p><!--{echo $title}--></p>
+<p><!--#echo $title#--></p>
+<p><?php echo $title ?></p>
+</body>
+</html>
+</source>
+访问数组的方式也和正常的模板中访问的方式一致。
+==逻辑段标签：php代码输出==
+对于在模板中嵌入php的代码，Wind模板中提供两种输出标签：
+<pre>
+<!--{...}-->
+<!--#...#-->
+</pre>
+
+<source lang="html4strict">
+<p>第一种大段输出代码：</p>
+<!--{foreach ($info as $key => $value) { }-->
+{$key}:{$value}<br/>
+<!--{}}-->
+<p>第二种大段输出代码：</p>
+<!--#foreach ($info as $key => $value) { #-->
+{$key}:{$value}<br/>
+<!--#}#-->
+</source>
+因为模板支持原生态的输出方式，所以也可以采用原生态的方式来嵌入php代码
+==Action请求： forwardAction==
+action标签，允许用户在模板中请求其他的action片段
+<source lang="html4strict">
+<action action="other" controller="index"/>
+</source>
+将会去请求同模块下的Index中的otherAction。将该action输出的模板片段嵌入到标签位置。
+==模板片段嵌入: template==
+<source lang="html4strict">
+<template source="index_other" suffix='htm'/>
+</source>
+将会引入当前模板目录下的index_other模板片段，该模板后缀为htm，该被引入的模板将会共享当前模板中的变量信息。
+==分页标签: page==
+<source lang="html4strict">
+<page tpl="index_page" total="10" page="1" per="4" count="13" url='http://www.phpwind.com'/>
+</source>
+解析：
+<pre>
+tpl: 分页的模板输出
+total: 总页数
+page: 当前页数
+per: 每页显示条数
+count: 总条数
+url: 翻页的url
+</pre>
+在index_page中可以使用如下变量分别访问传递过去的参数
+<pre>
+$total: 总页数
+$page: 当前页数
+$count: 总条数
+$url: 翻页的url
+</pre>
+场景回放：
+在index_run.htm模板中使用标签
+<source lang="html4strict">
+<page tpl="index_page" total="10" page="1" per="4" count="13" url='http://www.baidu.com'/>
+</source>
+模板index_page.htm中设置输出样式如下：
+<source lang="html4strict">
+<br />分页标签测试：在分页模板中调用的如下变量
+共{$page}/{$total}页
+共条数：$count
+跳转的url: $url
+</source>
+==跨action模板访问变量: {@}==
+在模板中调用action将会导致一个问题，就是模板中的变量不能共享。为了解决这个问题，让被调用的action中能访问主模板中的变量，引入了标签@符.
+<source lang="html4strict">
+{@tplname:var}
+</source>
+场景回放：
+在index_run.htm中调用action
+<source lang="html4strict">
+<p style="color:grey">action:</p>
+<action action="other" controller="index"/>
+</source>
+在otherAction中我注册一个变量
+<syntaxhighlight lang="php">
+public function otherAction() {
+	echo 'from other';
+	$this->setOutput('hello world', 'other');
+}
+</syntaxhighlight>
+在index_other.htm模板中，我访问主模板中index_run中的变量：
+<source lang="html4strict">
+<p>{$other}</p>
+<p style="color:red">{@index_run:title}</p>   
+</source>
+以上第一个访问变量是other中注册的自己的变量。第二行则是我访问主模板中的title变量
+==组件标签支持：component==
+该组件标签，主要是为了能在当前应用中调用其他应用或是模块而设定。
+<source lang="html4strict">
+<component name="comment" args='admin:index:run' templateDir='template.admin' appConfig='PLUGINS:comment.config.config.php' componentPath="PLUGINS:comment"/>
+</source>
+属性解析:
+<pre>
+ name:  组件名字,同时会作为该组件的命名空间访问（注意该组件的配置中，指定的应用名称一致，否则访问不到）
+ args:  传递给该组件的参数，M:C:A的形式，M ：module, C: conroller, A:action； 可以缺省配置，组合： m:c:a 、 c:a 、 a 缺省的情况使用缺省值
+ templateDir: 使用该组件的时候，制定模板输出路径： 支持命名空间的形式指定
+ appConfig:   该组件使用的配置文件，支持命名空间的形式指定，如WIND:config.config.xml
+ componentPath:  该组件的入口地址，同样支持命名空间的形式，如WIND:demos.helloworld
+</pre>
+  因为类名唯一性，所以需要确定当前应用的controller的名字和被请求的组件的controller的名字保证唯一性，否则无法正常调用
+== 相关链接 ==
+*[[模板标签开发规范]]
+*[[门户数据模型开发规范]]
+*[[门户标签使用规范]]

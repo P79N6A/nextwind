@@ -1,0 +1,753 @@
+== Simple-Hook ==
+=== s_header_nav ===
+{| class="wikitable"
+|-
+| 描述 || 全局头部导航
+|-
+| 执行方式 || 页面输出
+|-
+| 参数传递 || 无
+|}
+
+=== s_header_info_1 ===
+{| class="wikitable"
+|-
+| 描述 || 头部用户信息扩展点（左侧）
+|-
+| 执行方式 || 页面输出
+|-
+| 参数传递 || 无
+|}
+
+=== s_header_info_2 ===
+{| class="wikitable"
+|-
+| 描述 || 头部用户信息扩展点（右侧）
+|-
+| 执行方式 || 页面输出
+|-
+| 参数传递 || 无
+|}
+
+=== s_header_my ===
+{| class="wikitable"
+|-
+| 描述 || 用户快捷入口扩展
+|-
+| 执行方式 || 页面输出
+|-
+| 参数传递 || 无
+|}
+
+=== s_footer ===
+{| class="wikitable"
+|-
+| 描述 || 全局底部
+|-
+| 执行方式 || 页面输出
+|-
+| 参数传递 || 无
+|}
+
+=== s_space_nav ===
+{| class="wikitable"
+|-
+| 描述
+| 个人空间导航扩展
+|-
+| 执行方式
+| 页面输出
+|-
+| rowspan=2 | 参数传递
+| array $space 空间信息
+|-
+| string $src 当前页面定位标识
+|}
+
+=== s_space_profile ===
+{| class="wikitable"
+|-
+| 描述 || 空间资料页面
+|-
+| 执行方式 || 页面输出
+|-
+| 参数传递 || array $space 空间信息
+|}
+
+=== s_profile_menus ===
+{| class="wikitable"
+|-
+| 描述 || 个人设置-菜单项扩展
+|-
+| 执行方式 || 数据处理
+|-
+| 参数传递 || array $config 注册的菜单
+|}
+
+=== s_PwThreadsDao_add ===
+{| class="wikitable"
+|-
+| 描述 || 增加一条帖子记录时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| rowspan=2 | 参数传递
+| int $id 新增的帖子tid
+|-
+| array $fields 帖子字段
+|}
+
+=== s_PwThreadsDao_update ===
+{| class="wikitable"
+|-
+| 描述 || 更新一条帖子记录时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| rowspan=3 | 参数传递
+| int $id 新增的帖子tid
+|-
+| array $fields 更新的帖子字段数据
+|-
+| array $increaseFields 递增的帖子字段数据
+|}
+
+=== s_PwThreadsDao_batchUpdate ===
+{| class="wikitable"
+|-
+| 描述 || 批量更新多条帖子记录时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| rowspan=3 | 参数传递
+| array $ids 帖子tid序列
+|-
+| array $fields 更新的帖子字段数据
+|-
+| array $increaseFields 递增的帖子字段数据
+|}
+
+=== s_PwThreadsDao_revertTopic ===
+{| class="wikitable"
+|-
+| 描述 || 还原帖子时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| 参数传递
+| array $tids 帖子tid序列
+|}
+
+=== s_PwThreadsDao_delete ===
+{| class="wikitable"
+|-
+| 描述 || 删除一个帖子时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| 参数传递
+| int $id 帖子tid
+|}
+
+=== s_PwThreadsDao_batchDelete ===
+{| class="wikitable"
+|-
+| 描述 || 批量删除多个帖子时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| 参数传递
+| array $ids 帖子tid序列
+|}
+
+=== s_PwUserDataDao_update ===
+{| class="wikitable"
+|-
+| 描述 || 用户数据更新时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| rowspan=3 | 参数传递
+| int $id 用户id
+|-
+| array $fields 更新的用户字段数据
+|-
+| array $increaseFields 递增的用户字段数据
+|}
+
+=== s_PwUser_delete ===
+{| class="wikitable"
+|-
+| 描述 || 删除用户时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| 参数传递
+| int $uid 用户id
+|}
+
+=== s_PwUser_batchDelete ===
+{| class="wikitable"
+|-
+| 描述 || 批量删除用户时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| 参数传递
+| array $uids 用户id序列
+|}
+
+=== s_PwUser_add ===
+{| class="wikitable"
+|-
+| 描述 || 添加用户时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| 参数传递
+| PwUserInfoDm $dm
+|}
+
+=== s_PwUser_update ===
+{| class="wikitable"
+|-
+| 描述 || 更新用户信息时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| 参数传递
+| PwUserInfoDm $dm
+|}
+
+=== s_PwUserGroups_update ===
+{| class="wikitable"
+|-
+| 描述 || 用户组资料更新时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| 参数传递
+| int $gid 用户组id
+|}
+
+=== s_PwUserGroupsDao_delete ===
+{| class="wikitable"
+|-
+| 描述 || 删除用户组时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| 参数传递
+| int $gid 用户组id
+|}
+
+=== s_PwUserGroupPermission_update ===
+{| class="wikitable"
+|-
+| 描述 || 用户组权限变更时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| 参数传递
+| PwUserPermissionDm $dm
+|}
+
+=== s_PwLikeService_delLike ===
+{| class="wikitable"
+|-
+| 描述 || 删除喜欢时，调用
+|-
+| 执行方式 || 逻辑处理
+|-
+| rowspan=2 | 参数传递
+| int $uid 用户id
+|-
+| int $beLikeUid 喜欢的用户id
+|}
+
+=== s_PwLikeService_addLike ===
+=== s_PwUserTagRelationDao_deleteRelation ===
+=== s_PwUserTagDao_deleteTag ===
+=== s_PwUserTagDao_batchDeleteTag ===
+=== s_PwUserTagRelation_batchDeleteRelation ===
+=== s_PwUserTagRelation_deleteRelationByUid ===
+=== s_PwUserTagRelation_batchDeleteRelationByUids ===
+=== s_PwEmotionDao_add ===
+=== s_PwEmotionDao_update ===
+=== s_PwEmotionDao_delete ===
+=== s_PwEmotionDao_deleteEmotionByCatid ===
+=== s_PwConfigDao_update ===
+=== s_PwTaskDao_update ===
+=== s_addFollow ===
+=== s_deleteFollow ===
+=== s_profile_editUser ===
+=== s_update_avatar ===
+=== s_PwThreadType ===
+=== s_punch ===
+=== s_PwAttacmentService_getStorages ===
+=== s_PwThreadManageDoCopy ===
+=== s_PwUserService_logout ===
+=== s_PwEditor_app ===
+=== s_PwCreditOperationConfig ===
+=== s_seo_config ===
+=== s_PwUserBehaviorDao_replaceInfo ===
+=== s_admin_menu ===
+=== s_permissionCategoryConfig ===
+=== s_permissionConfig ===
+=== s_PwMobileService_checkVerify ===
+
+== Model-Hook ==
+=== m_PwThreadList ===
+{| class="wikitable"
+|-
+| 描述
+| colspan=3 | 帖子列表
+|-
+| 注入类
+| colspan=3 | SRV:forum.srv.PwThreadList
+|-
+| 接口类 
+| colspan=3 |SRV:forum.srv.threadList.do.PwThreadListDoBase
+|-
+| rowspan=9 | 接口列表
+| rowspan=3 | initData
+| 描述
+| 接收初始化数据
+|-
+| 执行方式
+| 逻辑处理
+|-
+| 参数传递
+| array $threaddb 帖子列表数据
+|-
+| rowspan=3 | bulidThread
+| 描述
+| 帖子数据加工
+|-
+| 执行方式
+| 数据处理
+|-
+| 参数传递
+| array $thread 帖子数据
+|-
+| rowspan=3 | createHtmlAfterSubject
+| 描述
+| 标题后面输出插件内容
+|-
+| 执行方式
+| 页面输出
+|-
+| 参数传递
+| array $thread 帖子数据
+|}
+
+=== m_PwThreadDisplay ===
+{| class="wikitable"
+|-
+| 描述
+| colspan=3 | 帖子内容展示
+|-
+| 注入类
+| colspan=3 | SRV:forum.srv.PwThreadDisplay
+|-
+| 接口类 
+| colspan=3 | SRV:forum.srv.threadDisplay.do.PwThreadDisplayDoBase
+|-
+| rowspan=32 | 接口列表
+| rowspan=3 | check
+| 描述
+| 检查帖子显示运行环境
+|-
+| 执行方式
+| 逻辑判断
+|-
+| 参数传递
+| 无
+|-
+| rowspan=3 | bulidRead
+| 描述
+| 加工帖子数据
+|-
+| 执行方式
+| 数据处理
+|-
+| 参数传递
+| array $read帖子数据
+|-
+| rowspan=3 | bulidUsers
+| 描述
+| 准备用户显示信息
+|-
+| 执行方式
+| 数据处理
+|-
+| 参数传递
+| array $users 用户数据
+|-
+| rowspan=3 | createHtmlBeforeContent
+| 描述
+| 输出插件内容（位置：帖子内容上方）
+|-
+| 执行方式
+| 页面输出
+|-
+| 参数传递
+| array $read 帖子信息
+|-
+| rowspan=3 | createHtmlAfterContent
+| 描述
+| 输出插件内容（位置：帖子内容下方）
+|-
+| 执行方式
+| 页面输出
+|-
+| 参数传递
+| array $read 帖子信息
+|-
+| rowspan=3 | createHtmlContentBottom
+| 描述
+| 输出插件内容（位置：帖子内容区底部）
+|-
+| 执行方式
+| 页面输出
+|-
+| 参数传递
+| array $read 帖子信息
+|-
+| rowspan=3 | createHtmlForThreadButton
+| 描述
+| 输出插件内容（位置：帖子操作按钮）
+|-
+| 执行方式
+| 页面输出
+|-
+| 参数传递
+| array $read 帖子信息
+|-
+| rowspan=4 | createHtmlForUserButton
+| 描述
+| 输出插件内容（位置：用户信息下方操作按钮）
+|-
+| 执行方式
+| 页面输出
+|-
+| rowspan=2 | 参数传递
+| array $user 用户信息
+|-
+| array $read 帖子信息
+|-
+| rowspan=4 | createHtmlAfterUserInfo
+| 描述
+| 输出插件内容（位置：用户信息下方）
+|-
+| 执行方式
+| 页面输出
+|-
+| rowspan=2 | 参数传递
+| array $user 用户信息
+|-
+| array $read 帖子信息
+|-
+| rowspan=3 | runJs
+| 描述
+| 输出插件内容（位置：页面底部，通常用来写js代码）
+|-
+| 执行方式
+| 页面输出
+|-
+| 参数传递
+| 无
+|}
+
+=== m_PwTopicPost ===
+{| class="wikitable"
+|-
+| 描述
+| colspan=3 | 发表帖子
+|-
+| 注入类
+| colspan=3 | SRV:forum.srv.PwPost
+|-
+| 接口类 
+| colspan=3 | SRV:forum.srv.post.do.PwPostDoBase
+|-
+| rowspan=26 | 接口列表
+| rowspan=3 | check
+| 描述
+| 帖子发布前，数据检查
+|-
+| 执行方式
+| 逻辑判断
+|-
+| 参数传递
+| PwPostDm $postDm
+|-
+| rowspan=3 | createHtmlBeforeContent
+| 描述
+| 输出插件内容（位置：正文上方）
+|-
+| 执行方式
+| 页面输出
+|-
+| 参数传递
+| 无
+|-
+| rowspan=3 | createHtmlRightContent
+| 描述
+| 输出插件内容（位置：正文右侧）
+|-
+| 执行方式
+| 页面输出
+|-
+| 参数传递
+| 无
+|-
+| rowspan=3 | dataProcessing
+| 描述
+| 帖子数据处理
+|-
+| 执行方式
+| 数据处理
+|-
+| 参数传递
+| PwPostDm $postDm
+|-
+| rowspan=3 | addThread
+| 描述
+| 帖子发布成功后调用
+|-
+| 执行方式
+| 逻辑处理
+|-
+| 参数传递
+| int $tid 帖子id
+|-
+| rowspan=3 | updateThread
+| 描述
+| 帖子更新成功后调用
+|-
+| 执行方式
+| 逻辑处理
+|-
+| 参数传递
+| int $tid 帖子id
+|-
+| rowspan=4 | addPost
+| 描述
+| 回复发布成功后调用
+|-
+| 执行方式
+| 逻辑处理
+|-
+| rowspan=2 | 参数传递
+| int $pid 回复id
+|-
+| int $tid 帖子id
+|-
+| rowspan=4 | updatePost
+| 描述
+| 回复更新成功后调用
+|-
+| 执行方式
+| 逻辑处理
+|-
+| rowspan=2 | 参数传递
+| int $pid 回复id
+|-
+| int $tid 帖子id
+|}
+
+=== m_PwTopicModify ===
+{| class="wikitable"
+|-
+| 描述 || 编辑帖子
+|-
+| 注入类
+| rowspan=3 | 同 m_PwTopicPost
+|-
+| 接口类
+|-
+| 接口列表
+|}
+
+=== m_PwReplyPost ===
+{| class="wikitable"
+|-
+| 描述 || 发表回复
+|-
+| 注入类
+| rowspan=3 | 同 m_PwTopicPost
+|-
+| 接口类
+|-
+| 接口列表
+|}
+
+=== m_PwReplyModify ===
+{| class="wikitable"
+|-
+| 描述 || 编辑回复
+|-
+| 注入类
+| rowspan=3 | 同 m_PwTopicPost
+|-
+| 接口类
+|-
+| 接口列表
+|}
+
+=== m_task_gainreward ===
+=== m_PwMessageService ===
+=== m_login_welcome ===
+=== m_PwFreshReplyByWeibo ===
+
+== Controller-Hook ==
+=== c_post_run ===
+{| class="wikitable"
+|-
+| 描述
+| 发表帖子展示页
+|-
+| 注入类
+| SRV:forum.srv.PwPost
+|}
+
+=== c_post_doadd ===
+{| class="wikitable"
+|-
+| 描述
+| 发表帖子提交页
+|-
+| 注入类
+| SRV:forum.srv.PwPost
+|}
+
+=== c_post_reply ===
+{| class="wikitable"
+|-
+| 描述
+| 发表回复展示页
+|-
+| 注入类
+| SRV:forum.srv.PwPost
+|}
+
+=== c_post_doreply ===
+{| class="wikitable"
+|-
+| 描述
+| 发表回复提交页
+|-
+| 注入类
+| SRV:forum.srv.PwPost
+|}
+
+=== c_post_modify ===
+{| class="wikitable"
+|-
+| 描述
+| 帖子编辑页面
+|-
+| 注入类
+| SRV:forum.srv.PwPost
+|}
+
+=== c_post_domodify ===
+{| class="wikitable"
+|-
+| 描述
+| 帖子编辑提交页面
+|-
+| 注入类
+| SRV:forum.srv.PwPost
+|}
+
+=== c_index_run ===
+{| class="wikitable"
+|-
+| 描述
+| 新帖列表页
+|-
+| 注入类
+| SRV:forum.srv.PwThreadList
+|}
+
+=== c_cate_run ===
+{| class="wikitable"
+|-
+| 描述
+| 分类帖子列表页
+|-
+| 注入类
+| SRV:forum.srv.PwThreadList
+|}
+
+=== c_thread_run ===
+{| class="wikitable"
+|-
+| 描述
+| 版块帖子列表页
+|-
+| 注入类
+| SRV:forum.srv.PwThreadList
+|}
+
+=== c_read_run ===
+{| class="wikitable"
+|-
+| 描述
+| 帖子阅读页
+|-
+| 注入类
+| SRV:forum.srv.PwThreadDisplay
+|}
+
+=== c_register ===
+{| class="wikitable"
+|-
+| 描述
+| 注册页
+|-
+| 注入类
+| SRV:user.srv.PwRegisterService
+|}
+
+=== c_fresh_post ===
+{| class="wikitable"
+|-
+| 描述
+| 我的关注发布帖子
+|-
+| 注入类
+| SRV:forum.srv.PwPost
+|}
+
+=== c_profile_extends_run ===
+{| class="wikitable"
+|-
+| 描述
+| 用户菜单功能扩展-展示
+|-
+| 注入类
+| APPS:profile.service.PwUserProfileExtends
+|}
+
+=== c_profile_extends_dorun ===
+{| class="wikitable"
+|-
+| 描述
+| 用户菜单功能扩展-执行
+|-
+| 注入类
+| APPS:profile.service.PwUserProfileExtends
+|}
+
+=== c_login_dorun ===
+{| class="wikitable"
+|-
+| 描述
+| 用户登录，表现层
+|-
+| 注入类
+| SRV:user.srv.PwLoginService
+|}

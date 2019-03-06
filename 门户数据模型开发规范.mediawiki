@@ -1,0 +1,70 @@
+门户数据模型也就是可提供给模块调用的数据来源，各种应用，都可以以数据模型的形式整合门户机制
+==目录结构及命名== 
+1、数据模型扩展，统一按目录置于src\service\design\srv\model\目录下<br/>
+2、目录名为模型名称<br/>
+3、每个模型目录下有两个文件：config.php， PwDesignXxxxDataService.php(Xxxx为模型名称,首字母大写),部分模型还有PwDesignXxxxPushService.php文件，用于推送（推送文件，将放置在《门户推送来源开发规范》中讲解）<br/>
+
+==config.php文件==
+config.php是一个模型的设置文件，对应模块设置中的属性设置，代码基本格式和定义以下内容:
+  return array(
+  'model'=>'thread', //模型名称
+  'name'=>'帖子',    //模型名称
+  'type'=>'bbs',     //所属类型 'bbs''user''space''other''api'之一
+  'standardSign'=>array('sTitle'=>'','sUrl'=>'','sFromId'=>'','sIntro'=>''), //定义标准化标签，array分别为：标题，URL，来源唯一ID，简介
+  'refresh'=>true,   //特殊设置，是否需要使用数据更新设置
+  'special'=>array(
+  'titlenum'	=>array('text','标题长度','0为不限制','','short'),
+  'desnum'	=>array('text','内容长度','0为不限制','','short'),
+  'limit'	=>array('text','显示条数','默认10条','','short'),
+  'timefmt'	=>array('select','时间格式','',array('m-d'=>'04-26', 'Y-m-d'=>'2012-04-26', 'Y-m-d H:i:s'=>'2012-04-26 11:30','H:i:s'=>'11:30:59', 'auto'=>'几天前')),
+  'isblank'	=>array('radio','链接打开方式','',array('0'=>'当前窗口', '1'=>'新窗口'),''),
+  ),//特殊设置，是否需要使用标题字数限制、简介字数限制、条数、时间格式、是否新窗口打开链接,不需要使用的可以注释掉
+  'sign'=>array(),//模型标签，定义此模型所能提供的数据标签，这里的标签越丰富，用户使用会越方便
+  'normal'=>array(),//普通设置，定义查询条件和各种特有选项
+ );
+===standardSign的格式样例：===
+ 'standardSign'=>array('sTitle'=>'{title}','sUrl'=>'{url}','sFromId'=>'{tid}','sIntro'=>''),
+其中"{title}"为此模型所设置的相应标签
+
+===sign的格式样例：===
+  'sign'=>array(
+  array('{tid}', '帖子ID','tid'),
+  array('{title}', '帖子标题','subject'),
+  array('{url}', '访问地址','url'),
+  ）
+以sign[0]为例说明:<br/>
+“{tid}”为数据标签，“帖子ID”为标签名称，“tid”对应的数据系列key，<br/>
+在对数据进行处理是，需要完全实现sign里定义的所有key，关于数据处理，会在下面讲解<br/>
+
+===normal的格式样例：===
+  'normal'=>array(
+  'tids'	=>array('text','帖子tid','多个tid之间采用空格隔开','','long'),
+  'fids'	=>array('select','版块','','forumOption|html','multiple'),
+  'special'	=>array('checkbox','主题类型','','specileType|array'),
+  'istop'	=>array('checkbox','置顶','',array('1'=>'本版置顶','2'=>'分类置顶','3'=>'全局置顶')),
+  'isdigest'	=>array('radio','精华','',array('0'=>'不限','1'=>'是')),
+  'order'       =>array('select','主题排序方式','',array('0'=>'系统推荐排序','1'=>'最新回复时间','2'=>'最新发布时间','3'=>'回复数由多到少')),
+  'image'	=>array('html','图片','','','image|image'),
+  )
+
+以array[tids]为例说明<br/>
+“tids”表单name，<br/>
+“text”表单类型(text,select,radio,checkbox,textarea,html中一种)<br/>
+“帖子tid”表单名称，<br/>
+“多个tid之间采用空格隔开”填写说明，<br/>
+“forumOption|html”表单默认数据，支持变量形式，变量可以提定以array或html显示,也支持直接写入数据，如上面的array('0'=>'不限','1'=>'是')<br/>
+“long”表单的样式：text类型(long为长表单,short为短表单);select类型（multiple为可多选）<br/>
+
+===自定义html的说明：<br/>===
+1)'image'=>array('html','图片','图片说明','','template|img')，template为模版文件名,img为模版hook勾子名<br/>
+2)在template\design\property\目录，新建模板文件template.html, 定义'img'的模板勾子<br/>
+3)<input name="property[image]" value="{$property[image]}">',表单name必须以property命名<br/>
+
+==PwDesignXxxxDataService.php文件==
+为模型数据服务文件，提供数据获取，属性保存，属性显示的一些接口<br/>
+必须继承基类PwDesignModelBase 并实现以下接口：<br/>
+  decorateAddProperty  模块添加属性接口，用于在模块添加时，对默认数据的处理，一般用于config的normal格式中指写的变量默认数据
+  decorateEditProperty 模块属性修改接口，用于在模块添加时，对默认数据的处理，一般用于config的normal格式中指写的变量默认数据
+  decorateSaveProperty 模块属性保存接口, 用于在保存时的一些特殊处理,一般用于 如图片上传，变量转换等
+  getData 获取数据接口，跟据属性设置里的查询条件进行数据获取操作，在这个接口里，必须完全实现些模块的相关标签的定义的key，否则不能通过验证
+在getData接口中，对时间，标题字数和简介字数所做的限制需要使用_formatTime()  _formatTitle() 和_formatDes()进行转换，这些方法已在父类中实现

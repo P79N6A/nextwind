@@ -1,0 +1,1396 @@
+NextWind中的配置存在于pw_common_config中，根据业务的不同我们根据命名空间的概念（namespace）来区分每个配置项，本文介绍目前已有的配置块及其中含有的配置项。
+==[admin]:后台所有的配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|ip.allow
+||string
+|| 后台登录IP限制
+||
+|}
+
+==[site]： 站点相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|info.name
+||string
+|| 站点名称
+||phpwind 9.01
+|-
+|info.url
+||string
+|| 站点地址
+||http://www.phpwind.net
+|-
+|info.mail
+||string
+|| 管理员电子邮箱
+||admin@phpwind.net
+|-
+|info.icp
+||string
+|| ICP 备案信息
+||赣23748732487
+|-
+|statisticscode
+||string
+|| 第三方统计代码
+||
+|-
+|info.logo
+||string
+|| 网站LOG//去除
+||
+|-
+|visit.state
+||string
+|| 站点状态
+||1
+|-
+|visit.group
+||array
+|| 允许访问的用户组
+||a:2:{i:0;s:6:"member";i:1;s:6:"system";}
+|-
+|visit.gid
+||array
+|| 允许访问的用户组具体的GID
+||a:5:{i:0;s:1:"8";i:1;s:1:"9";i:2;s:2:"10";i:3;s:2:"11";i:4;s:2:"12";}
+|-
+|visit.ip
+||string
+|| 允许访问的IP段
+||10.7.240.225
+|-
+|visit.member
+||string
+|| 允许访问的会员
+||admin,
+|-
+|visit.message
+||string
+|| 限制访问提示信息
+||在测网站内部开放，大家淡定！
+|-
+|time.timezone
+||string
+|| 默认时区
+||8
+|-
+|time.cv
+||string
+|| 服务器时间校正
+||0
+|-
+|refreshtime
+||string
+|| 刷新页面时间间隔
+||0
+|-
+|onlinetime
+||string
+|| 在线用户时限
+||0
+|-
+|managereasons
+||string
+|| 备选管理操作原因
+||11111111111
+|-
+|debug
+||string
+|| DEBUG 模式运行站点
+||1
+|-
+|cookie.path
+||string
+|| Cookie 路径
+||
+|-
+|cookie.domain
+||string
+|| Cookie 作用域
+||
+|-
+|cookie.pre
+||string
+|| Cookie 前缀
+||wekit_
+|-
+|hash
+||string
+|| hash值
+||wekit
+|-
+|upgradestrategy
+||array
+|| 用户组提升设置
+||a:0:{}
+|-
+|punch.open
+||string
+|| 是否开启每日打卡
+||1
+|-
+|punch.reward
+||array
+|| 每日打卡奖励
+||a:4:{s:4:"type";s:1:"1";s:3:"min";d:11;s:3:"max";d:300;s:4:"step";d:22;}
+|-
+|punch.frend.open
+||string
+|| 是否开启帮他打卡功能
+||1
+|-
+|punch.frend.reward
+||array
+|| 帮打卡的奖励（帮打卡好友人数上限、被帮者领取积分数、帮打卡奖励积分数）
+||a:3:{s:9:"friendNum";d:5;s:11:"rewardMeNum";d:10;s:9:"rewardNum";d:10;}
+|-
+|task.isOpen
+||string
+|| 任务是否开启
+||1
+|-
+|medal.isopen
+||string
+|| 勋章是否开启
+||1
+|-
+|rewrite
+||array
+|| URL伪静态配置
+||a:1:{s:7:"default";a:3:{s:6:"format";N;s:7:"pattern";s:5:"/^$/i";s:5:"route";s:0:"";}}
+|-
+|homeUrl
+||string
+|| 网站首页地址
+||index.php?m=bbs
+|-
+|homeRouter
+||array
+|| 网站首页采用的路由规则
+||a:3:{s:1:"m";s:3:"bbs";s:1:"c";s:5:"index";s:1:"a";s:3:"run";}
+|-
+|theme.site.pack
+||string
+|| 整站风格包路径
+||site
+|-
+|theme.site.default
+||string
+|| 默认的整站风格
+||default
+|-
+|theme.space.pack
+||string
+|| 个人空间风格包路径
+||space
+|-
+|theme.space.default
+||string
+|| 默认的个人空间风格
+||default
+|-
+|theme.forum.pack
+||string
+|| 论坛风格包路径
+||forum
+|-
+|theme.portal.pack
+||string
+|| 门户风格包路径
+||portal/appcenter
+|-
+|autoForbidden.open
+||string
+|| 自动禁止是否开启
+||0
+|-
+|autoForbidden.condition
+||array
+|| 自动禁止的积分依据
+||a:2:{s:6:"credit";s:1:"1";s:3:"num";s:3:"102";}
+|-
+|autoForbidden.day
+||string
+|| 自动禁止期限
+||0
+|-
+|autoForbidden.type
+||array
+|| 自动禁止的类型
+||a:1:{i:0;s:1:"1";}
+|-
+|autoForbidden.ban_others
+||string
+|| 自动禁止是否禁止多帐号
+||0
+|-
+|autoForbidden.reason
+||string
+|| 自动禁止的原因
+||
+|-
+|css.compress
+||string
+|| 开启css压缩
+||0
+|-
+|css.tag
+||string
+|| 界面管理-STYLE配置
+||<style>body{font-family:'Microsoft Yahei';}</style>
+|-
+|css.logo
+||string
+|| 站点LOGO
+||
+|-
+|domain.root
+||array
+|| 二级域名设置-根域名
+||a:0:{}
+|-
+|domain.app
+||array
+|| 二级域名设置-应用域名
+||a:0:{}
+|-
+|domain
+||array
+|| 二级域名
+||a:0:{}
+|-
+|info.notice
+||string
+|| 网站顶部公告//已停用
+||网站公告
+|}
+
+==[nav]：导航相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|main
+||array
+|| 主导航列表
+||a:1:{i:0;a:2:{s:4:"name";s:36:"<a href="index.php?m=bbs">论坛</a>";s:4:"sign";s:14:"bbs|index|run|";}}
+|-
+|bottom
+||array
+|| 底部导航列表
+||a:1:{i:0;a:2:{s:4:"name";s:88:"<a href="http://www.phpwind.com/">关于phpwind</a>";s:4:"sign";s:0:"";}}
+
+|-
+|my
+||array
+|| 我的下拉菜单列表
+||a:1:{i:0;a:2:{s:4:"name";s:72:"<a href="index.php?m=space"><em class="icon_space"></em>我的空间</a>";s:4:"sign";s:5:"space";}}
+|}
+
+==[attachment]：附件相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|pathsize
+||string
+|| 附件路径控制
+||10000
+|-
+|attachnum
+||string
+|| 单次附件上传个数限制
+||5
+|-
+|extsize
+||array
+|| 附件类型和尺寸控制
+||a:5:{s:3:"tar";i:2000;s:3:"zip";i:2000;s:3:"png";i:1800;s:4:"jpeg";i:2400;s:3:"jpg";i:2000;}
+|-
+|storage.type
+||string
+|| 附件存储类型
+||ftp
+|-
+|ftp.url
+||string
+|| 远程附件地址
+||http://www.wekit.net/ftpuploads
+|-
+|ftp.server
+||string
+|| FTP服务器地址
+||www.wekit.net
+|-
+|ftp.port
+||string
+|| FTP服务器端口
+||21
+|-
+|ftp.dir
+||string
+|| FTP上传目录
+||
+|-
+|ftp.user
+||string
+|| FTP帐号
+||test
+|-
+|ftp.pwd
+||string
+|| FTP密码
+||123456
+|-
+|ftp.timeout
+||string
+|| FTP超时
+||30
+|-
+|thumb
+||string
+|| 帖子图片缩略设置
+||1
+|-
+|thumb.quality
+||string
+|| 缩略图质量
+||90
+|-
+|thumb.size.width
+||string
+|| 缩略图大小设置[宽]
+||500
+|-
+|thumb.size.height
+||string
+|| 缩略图大小设置[高]
+||500
+|-
+|mark.file
+||string
+|| 水印文件
+||mark.gif
+|-
+|mark.fontcolor
+||string
+|| 水印文字颜色
+||#c0504d
+|-
+|mark.fontfamily
+||string
+|| 水印字体
+||en_nes.ttf
+|-
+|mark.fontsize
+||string
+|| 水印文字大小
+||20
+|-
+|mark.gif
+||string
+|| 为GIF图片加水印
+||1
+|-
+|mark.limitheight
+||string
+|| 图片附件大小控制[高]
+||100
+|-
+|mark.limitwidth
+||string
+|| 图片附件大小控制[宽]
+||100
+|-
+|mark.markset
+||array
+|| 水印策略
+||a:2:{i:0;s:3:"bbs";i:1;s:5:"album";}
+|-
+|mark.position
+||string
+|| 水印位置
+||9
+|-
+|mark.quality
+||string
+|| 水印设置-图片质量
+||85
+|-
+|mark.text
+||string
+|| 水印文字
+||PHPWIND.NET
+|-
+|mark.transparency
+||string
+|| 水印透明度
+||50
+|-
+|mark.type
+||string
+|| 水印类型
+||2
+|}
+
+==[bbs]：BBS相关的配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|title.length.max
+||string
+|| 帖子标题最大长度
+||100
+|-
+|content.length.max
+||string
+|| 内容长度控制最大值
+||50000
+|-
+|content.length.min
+||string
+|| 内容长度控制最小值
+||0
+|-
+|post.check.groups
+||array
+|| 不需要审核的用户组
+||
+|-
+|post.check.open
+||string
+|| 是否开启定时发帖审核
+||0
+|-
+|post.check.start_hour
+||string
+|| 定时发帖审核开始时间小时
+||22
+|-
+|post.check.start_min
+||string
+|| 定时发帖审核开始时间分钟
+||0
+|-
+|post.check.end_hour
+||string
+|| 定时发帖审核结束时间小时
+||4
+|-
+|post.check.end_min
+||string
+|| 定时发帖审核结束时间分钟
+||0
+|-
+|thread.new_thread_minutes
+||string
+|| 新帖控制，超过设定时间后，主题将不在显示为新帖。
+||10
+|-
+|thread.perpage
+||string
+|| 每页显示主题数
+||50
+|-
+|thread.max_pages
+||string
+|| 最大显示页数
+||20
+|-
+|thread.hotthread_replies
+||string
+|| 热帖回复数量，回复数超过设定值后，主题将显示热门帖子图标。
+||2
+|-
+|thread.leftside_width
+||string
+|| 设置左侧版块导航宽度，可根据版块名称长度自动调整。//已停用
+||
+|-
+|read.anoymous_displayname
+||string
+|| 匿名的名称，发布匿名帖时，匿名用户显示的匿名文字。//已停用
+||
+|-
+|read.display_member_info
+||string
+|| 显示个人信息
+||0
+|-
+|read.display_info
+||array
+|| 显示的个人信息字段
+||a:4:{s:3:"uid";i:1;s:7:"regdate";i:1;s:9:"lastvisit";i:1;s:4:"fans";i:1;}
+|-
+|read.display_info_vieworder
+||array
+|| 显示的个人信息字段的顺序
+||a:5:{s:3:"uid";i:0;s:7:"regdate";i:1;s:9:"lastvisit";i:2;s:4:"fans";i:3;s:7:"follows";i:4;}
+|-
+|read.floor_name
+||string
+|| 帖子楼层单位
+||坨
+|-
+|read.perpage
+||string
+|| 每页帖子楼层数
+||2
+|-
+|read.defined_floor_name
+||string
+|| 预设帖子楼层名称
+||1:沙发
+|-
+|read.image_lazy
+||string
+|| 图片懒加载，开启后，浏览帖子实现图片按需加载，可以提升页面显示速度，但可能会影响搜索引擎对图片的收录。
+||1
+|-
+|read.shield_banthreads
+||string
+|| 屏蔽禁言会员所有帖子，屏蔽禁言会员的帖子内容，普通用户不可查看。//已停用
+||
+|-
+|editor.style
+||string
+|| 编辑器布局样式
+||1
+|-
+|content.duplicate
+||string
+|| 编辑器内容重复检查是否开启
+||1
+|-
+|ubb.cvtimes
+||string
+|| 编辑器帖子中标签转换控制
+||20
+|-
+|ubb.img.open
+||string
+|| 编辑器是否开启img标签支持
+||1
+|-
+|ubb.img.width
+||string
+|| 编辑器-img大小控制宽
+||800
+|-
+|ubb.img.height
+||string
+|| 编辑器-img大小控制高
+||800
+|-
+|ubb.size.max
+||string
+|| 编辑器-img标签最大值控制
+||5
+|-
+|ubb.flash.open
+||string
+|| 编辑器-是否开启flash标签支持
+||1
+|-
+|ubb.media.open
+||string
+|| 编辑器-是否开启多媒体标签支持
+||1
+|-
+|ubb.iframe.open
+||string
+|| 编辑器-是否开启iframe标签支持
+||1
+|-
+|word_version
+||string
+|| 敏感词-敏感词版本号
+||181
+|-
+|post.timing.open
+||string
+|| 是否开启定时发帖//已停用
+||0
+|-
+|post.timing.start_hour
+||string
+|| 定时发帖开始时间小时//已停用
+||1
+|-
+|post.timing.start_min
+||string
+|| 定时发帖开始时间分钟//已停用
+||0
+|-
+|post.timing.end_hour
+||string
+|| 定时发帖结束时间小时//已停用
+||0
+|-
+|post.timing.end_min
+||string
+|| 定时发帖结束时间分钟//已停用
+||0
+|-
+|post.timing.groups
+||array
+|| 定时发帖限制允许发帖的用户组//已停用
+||
+|-
+|bbsname
+||string
+|| 论坛名称，设置后显示在面包屑路径以及论坛各个页面title的站点名称中//已停用
+||phpwind 9.0
+|-
+|index.show_birthday_members
+||string
+|| 显示今日生日会员，开启后，将在站点首页显示今天过生日的会员，若无会员生日则隐藏模块。//已停用
+||1
+|-
+|index.show_links
+||string
+|| 显示友情链接，开启后，将在论坛首页显示友情链接模块。//已停用
+||1
+|-
+|index.show_online_users
+||string
+|| 显示在线用户//已停用
+||1
+|-
+|index.list_online_users
+||string
+|| 是否默认展开在线列表，开启后，将在论坛首页显示在线用户。<br>展开在线用户列表会影响效率，建议不要勾选。//已停用
+||1
+|}
+
+==[credit]：积分相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|credits
+||array
+|| 全局积分设置
+||a:1:{i:1;a:4:{s:4:"name";s:6:"铜币";s:4:"unit";s:3:"个";s:4:"open";s:1:"1";s:3:"log";s:1:"1";}}
+|-
+|strategy
+||array
+|| 全局积分策略设置
+||a:1:{s:10:"post_topic";a:2:{s:5:"limit";s:1:"3";s:6:"credit";a:4:{i:1;s:1:"2";i:2;s:1:"2";i:3;s:0:"";i:4;s:0:"";}}}
+|-
+|recharge
+||array
+|| 全局积分充值设置
+||a:1:{i:1;a:2:{s:4:"rate";s:3:"100";s:3:"min";s:4:"0.01";}}
+|-
+|exchange
+||array
+|| 全局积分转换设置
+||a:1:{s:3:"2_1";a:5:{s:7:"credit1";s:1:"2";s:7:"credit2";s:1:"1";s:6:"value1";s:1:"1";s:6:"value2";s:2:"10";s:6:"ifopen";i:1;}}
+|-
+|transfer
+||array
+|| 全局积分转账设置
+||a:1:{i:1;a:3:{s:6:"ifopen";i:1;s:4:"rate";s:0:"";s:3:"min";i:1;}}
+|}
+
+==[register]：注册相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|type
+||string
+|| 允许新用户注册
+||1
+|-
+|protocol
+||string
+|| 注册协议内容
+||当您申请用户时，表示您已经同意遵守本规章。
+|-
+|close.msg
+||string
+|| 关闭注册原因
+||暂时关闭注册，8好意思
+|-
+|guide
+||array
+|| 注册引导设置
+||a:2:{s:7:"profile";a:1:{s:5:"order";s:0:"";}s:9:"attention";a:1:{s:5:"order";s:0:"";}}
+|-
+|active.check
+||string
+|| 是否开启新用户注册审核
+||0
+|-
+|active.field
+||array
+|| 注册页面显示的需填写注册字段
+||a:2:{i:0;s:2:"qq";i:1;s:5:"aliww";}
+|-
+|active.mail
+||string
+|| 是否开启邮件激活
+||0
+|-
+|active.mail.title
+||string
+|| 激活邮件标题
+||来自{sitename}的注册邮件
+|-
+|active.mail.content
+||string
+|| 激活邮件内容
+||尊敬的{username}，这是来自{sitename}注册激活邮件。
+<br/>请点击下面的链接进行帐号的激活：<br/>
+{url}
+<br/>如果不能点击链接，请复制到浏览器地址输入框访问。
+<br/>
+<br/>
+{sitename} <br/>
+{time}
+|-
+|active.phone
+||string
+|| 手机激活
+||0
+|-
+|invite.credit.type
+||string
+|| 可进行积分购买邀请码的积分类型
+||1
+|-
+|invite.expired
+||string
+|| 邀请码有效期限
+||30
+|-
+|invite.pay.open
+||string
+|| 是否开启在线购买邀请码
+||1
+|-
+|invite.pay.money
+||string
+|| 邀请码价格
+||1
+|-
+|invite.reward.credit.type
+||string
+|| 邀请成功的奖励积分类型
+||1
+|-
+|invite.reward.credit.num
+||string
+|| 邀请成功的奖励积分数
+||100
+|-
+|security.ban.username
+||string
+|| 不允许被注册的用户名名单
+||创始人,管理员,版主,斑竹,admin
+|-
+|security.ip
+||string
+|| 同一IP重复注册控制
+||0
+|-
+|security.password
+||array
+|| 注册的密码复杂度设置
+||a:3:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"4";}
+|-
+|security.password.max
+||string
+|| 密码允许的最长长度
+||15
+|-
+|security.password.min
+||string
+|| 密码允许的最短长度
+||6
+|-
+|security.username.max
+||string
+|| 用户名允许的最长长度
+||15
+|-
+|security.username.min
+||string
+|| 用户名允许的最短长度
+||3
+|-
+|welcome.type
+||array
+|| 发送欢迎信息的形式
+||a:1:{i:0;s:1:"2";}
+|-
+|welcome.content
+||string
+|| 欢迎信息的内容
+||尊敬的{username}，
+<br/>欢迎你注册成为{sitename}的会员！
+<br/>多多发言，希望这里能给您带来快乐！
+<br/>本站全体管理人员向您问好！<br/>
+{username}<br/>
+{time}
+|-
+|welcome.title
+||string
+|| 欢迎信息的标题
+||欢迎你注册成为{sitename}的会员
+|}
+
+==[login]：登录相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|ways
+||array
+|| 允许的登录方式
+||a:3:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";}
+|-
+|question.groups
+||array
+|| 强制使用安全问题的用户组
+||a:1:{i:0;s:1:"4";}
+|-
+|trypwd
+||string
+|| 密码尝试次数
+||200
+|-
+|resetpwd.mail.content
+||string
+|| 重置密码的邮件内容
+||尊敬的{username}，这是来自{sitename}的密码重置邮件。
+点击下面的链接重置您的密码：<br/>
+{url}<br/>
+如果链接无法点击，请将链接粘贴到浏览器的地址栏中访问。<br/>
+{sitename} <br/>
+{time}
+|-
+|resetpwd.mail.title
+||string
+|| 重置密码的邮件标题
+||{username}您好，这是{sitename}发送给您的密码重置邮件
+|}
+
+==[verify]：验证码相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|content.length
+||string
+|| 验证码个数
+||4
+|-
+|content.questions
+||array
+|| 验证问题及答案
+||a:0:{}
+|-
+|content.showanswer
+||string
+|| 是否显示问题的答案
+||0
+|-
+|content.type
+||array
+|| 验证码内容
+||a:1:{i:0;s:1:"3";}
+|-
+|randtype
+||array
+|| 验证码的识别难度
+||a:1:{i:0;s:4:"font";}
+|-
+|showverify
+||array
+|| 验证策略
+||a:2:{i:0;s:8:"register";i:1;s:7:"sendmsg";}
+|-
+|type
+||string
+|| 验证码类型
+||image
+|-
+|voice
+||string
+|| 是否开启语音验证码
+||0
+|-
+|width
+||string
+|| 验证码的图片宽度
+||240
+|-
+|height
+||string
+|| 验证码图片高度
+||60
+|}
+
+==[email]：电子邮件相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|mailOpen
+||string
+|| 是否开启邮件发送
+||1
+|-
+|mailMethod
+||string
+|| 邮件发送方式，目前只有smtp
+||smtp
+|-
+|mail.host
+||string
+|| SMTP服务器
+||smtp.qq.com
+|-
+|mail.port
+||string
+|| SMTP端口
+||25
+|-
+|mail.from
+||string
+|| 发信人地址
+||nextwind@qq.com
+|-
+|mail.auth
+||string
+|| 是否SMTP用户身份验证
+||1
+|-
+|mail.user
+||string
+|| 验证用户名
+||nextwind@qq.com
+|-
+|mail.password
+||string
+|| 验证密码
+||123456
+|}
+
+==[pay]：网上支付相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|ifopen
+||string
+|| 网上支付功能是否开启
+||1
+|-
+|reason
+||string
+|| 网上支付功能关闭原因
+||本站暂未开通网上支付功能，有疑问请联系管理员
+|-
+|alipay
+||string
+|| 支付宝帐号
+||ar_advert@alibaba-inc.com
+|-
+|alipayinterface
+||string
+|| 支付宝接口类型
+||1
+|-
+|alipaypartnerID
+||string
+|| 支付宝合作者身份(PID)
+||2088701765233705
+|-
+|alipaykey
+||string
+|| 支付宝交易安全校验码(key)
+||v6tqhm5jjgmkrqqf8nnyq8gixra4iflk
+|-
+|tenpay
+||string
+|| 财付通帐号
+||1202803801
+|-
+|tenpaykey
+||string
+|| 财付通密钥
+||erew3qt7rl7ycxz1g5f4d8s6h4fh1y8u
+|-
+|paypal
+||string
+|| 贝宝帐号
+||sky_hold@163.com
+|-
+|paypalkey
+||string
+|| 贝宝密钥
+||BpYSrd6uHhDxm7V6IITPZ7ewFa6UQJavMyR6zKaX
+|-
+|99bill
+||string
+|| 快钱帐号
+||
+|-
+|99billkey
+||string
+|| 快钱密钥
+||
+|}
+
+==[seo]： SEO相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|seo_bbs_forumlist_0
+||array
+|| 版块导航页SEO
+||a:6:{s:3:"mod";s:3:"bbs";s:4:"page";s:9:"forumlist";s:5:"param";i:0;s:5:"title";s:10:"{sitename}";s:8:"keywords";s:31:"{sitename}测试关键字哈哈";s:11:"description";s:28:"{sitename}测试描述哈哈";}
+|-
+|seo_bbs_thread_0
+||array
+|| 帖子列表页SEO
+||a:6:{s:3:"mod";s:3:"bbs";s:4:"page";s:6:"thread";s:5:"param";i:0;s:5:"title";s:22:"{sitename}.{forumname}";s:8:"keywords";s:41:"{sitename}- {forumname}- {classification}";s:11:"description";s:58:"{sitename} {forumdescription} {forumname} {classification}";}
+|-
+|seo_bbs_read_0
+||array
+|| 帖子阅读页SEO
+||a:6:{s:3:"mod";s:3:"bbs";s:4:"page";s:4:"read";s:5:"param";i:0;s:5:"title";s:15:"这是阅读页";s:8:"keywords";s:35:"帖子阅读页keywords [关键字]";s:11:"description";s:35:"帖子阅读页description [描述]";}
+|-
+|seo_bbs_new_0
+||array
+|| 本站新帖SEO
+||a:6:{s:3:"mod";s:3:"bbs";s:4:"page";s:3:"new";s:5:"param";i:0;s:5:"title";s:31:"{sitename}| {page}|测试描述";s:8:"keywords";s:34:"{sitename}| {page}|测试关键字";s:11:"description";s:31:"{sitename}| {page}|测试描述";}
+|-
+|seo_topic_hot_0
+||array
+|| 热门话题SEO
+||a:6:{s:3:"mod";s:5:"topic";s:4:"page";s:3:"hot";s:5:"param";i:0;s:5:"title";s:26:"热门话题title [标题]";s:8:"keywords";s:32:"热门话题keywords [关键字]";s:11:"description";s:32:"热门话题description [描述]";}
+|-
+|seo_like_hot_0
+||array
+|| 热门喜欢SEO
+||a:6:{s:3:"mod";s:4:"like";s:4:"page";s:3:"hot";s:5:"param";i:0;s:5:"title";s:26:"热门喜欢title [标题]";s:8:"keywords";s:32:"热门喜欢keywords [关键字]";s:11:"description";s:32:"热门喜欢description [描述]";}
+|-
+|seo_area_index_0
+||array
+|| 门户首页SEO
+||a:6:{s:3:"mod";s:4:"area";s:4:"page";s:5:"index";s:5:"param";i:0;s:5:"title";s:26:"门户首页title [标题]";s:8:"keywords";s:32:"门户首页keywords [关键字]";s:11:"description";s:32:"门户首页description [描述]";}
+|}
+
+==[rewrite]：URL伪静态相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|format.thread
+||string
+|| 帖子列表页面rewrite规则
+||f{fid}-{page}
+|-
+|format.read
+||string
+|| 帖子阅读页面rewrite规则
+||p/{tid}-{fid}-{page}
+|-
+|format.special
+||string
+|| 门户自定义页面rewrite规则
+||special-{id}
+|-
+|format.space
+||string
+|| 个人空间页面rewrite规则
+||u-{uid}.html
+|-
+|format.tag
+||string
+|| 话题页面rewrite规则
+||tag-{id}
+|-
+|isopen.default
+||string
+|| 是否开启默认的规则
+||1
+|-
+|isopen.thread
+||string
+|| 是否开启帖子列表页面的规则
+||1
+|-
+|isopen.read
+||string
+|| 是否开启帖子阅读页面的规则
+||1
+|-
+|isopen.special
+||string
+|| 是否开启门户自定义页面的规则
+||0
+|-
+|isopen.space
+||string
+|| 是否开启个人空间页面的规则
+||0
+|-
+|isopen.tag
+||string
+|| 是否开启话题页面的规则
+||0
+|}
+
+==[domain]：URL伪静态相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|default
+||string
+|| 默认域名
+|| www.p9.com
+|-
+|domain.hold
+||string
+|| 保留域名
+|| bbs
+|-
+|forum.isopen
+||string
+|| 是否开启版块根域
+|| 1
+|-
+|forum.root
+||string
+|| 版块根域
+|| bbs
+|-
+|space.isopen
+||string
+|| 是否开启个人空间页面根域
+|| 1
+|-
+|space.root
+||string
+|| 个人空间页面根域
+|| space
+|-
+|special.isopen
+||string
+|| 是否开启门户自定义页面根域
+|| 1
+|-
+|special.root
+||string
+|| 门户自定义页面根域
+|| special
+|}
+
+==[report]：举报相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|noticeReceiver
+||array
+|| 允许接受举报列表提醒信息的用户列表
+||a:8:{i:0;i:68;i:1;i:82;i:2;i:134;i:3;i:180;i:4;i:361;i:5;i:104;i:6;i:331;i:7;s:3:"252";}
+|}
+
+==[word]：敏感词相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|istip
+||string
+|| 敏感词是否开启前台文字提示
+||1
+|}
+
+==[css]：云平提-模板管理-界面管理相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|logo
+||string
+|| 站点logo
+||background/logo.jpg
+|-
+|bg
+||string
+|| 全站背景图片
+||background/2110a02dff18fde.jpg
+|-
+|bgcolor
+||string
+|| 全站背景颜色
+||#f2f2f2
+|-
+|bgtile
+||string
+|| 全站背景展示方式
+||fixed
+|-
+|bgalign
+||string
+|| 全局背景展示位置
+||center
+|-
+|size
+||string
+|| 全站文本大小
+||18px
+|-
+|font
+||string
+|| 全站字体选择
+||'Microsoft Yahei'
+|-
+|corelink
+||string
+|| 全站链接颜色
+||#ddd9c3
+|-
+|coretext
+||string
+|| 全站文本颜色
+||#ddd9c3
+|-
+|subjectsize
+||string
+|| 帖子列表标题字体大小
+||24px
+|-
+|headbg
+||string
+|| 头部导航-背景图片
+||background/1.jpg
+|-
+|headbgcolor
+||string
+|| 头部导航-背景颜色
+||#ddd9c3
+|-
+|headbgtile
+||string
+|| 头部导航-背景展示方式
+||fixed
+|-
+|headbgalign
+||string
+|| 头部导航-背景展示位置
+||center
+|-
+|headlink
+||string
+|| 头部导航-导航链接颜色
+||#ddd9c3
+|-
+|headactivelink
+||string
+|| 头部导航-激活状态背景颜色
+||#ddd9c3
+|-
+|headactivecolor
+||string
+|| 头部导航-激活状态链接颜色
+||#ddd9c3
+|-
+|boxbg
+||string
+|| 全局通用模块-模块背景图片
+||background/5cf4817773efc58.jpg
+|-
+|boxbgcolor
+||string
+|| 全局通用模块-模块背景颜色
+||#ddd9c3
+|-
+|boxbgtile
+||string
+|| 全局通用模块-模块背景展示方式
+||fixed
+|-
+|boxbgalign
+||string
+|| 全局通用模块-模块背景展示位置
+||left
+|-
+|boxborder
+||string
+|| 全局通用模块-模块边框颜色
+||#eeece1
+|-
+|boxlink
+||string
+|| 全局通用模块-模块链接颜色
+||#4bacc6
+|-
+|boxtext
+||string
+|| 全局通用模块-模块文本颜色
+||#4bacc6
+|-
+|boxhdbg
+||string
+|| 全局通用模块-标题栏背景图片
+||background/7eb2e477e681fda.jpg
+|-
+|boxhdbgcolor
+||string
+|| 全局通用模块-标题栏背景颜色
+||#7f7f7f
+|-
+|boxhdbgtile
+||string
+|| 全局通用模块-标题栏背景展示方式
+||repeat-y
+|-
+|boxhdbgalign
+||string
+|| 全局通用模块-标题栏背景展示位置
+||left
+|-
+|boxhdborder
+||string
+|| 全局通用模块-标题栏边框颜色
+||#4bacc6
+|-
+|boxhdlink
+||string
+|| 全局通用模块-标题栏链接颜色
+||#4bacc6
+|-
+|boxhdtext
+||string
+|| 全局通用模块-标题栏文本颜色
+||#4bacc6
+|}
+
+==[components]：windFramework组件相关配置==
+{| class="wikitable"
+|-
+! name !! type !! description !! expample
+|-
+|storage
+||array
+|| 附件存储FTP组件配置
+||a:1:{s:4:"path";s:24:"LIB:storage.PwStorageFtp";}
+|}

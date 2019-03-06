@@ -1,0 +1,71 @@
+== 概述 ==
+风格包也是属于一种应用，但风格包有着和普通应用不同的地方。这里主要介绍下风格安装和应用安装一些不一样的，需要注意的地方。当然看本文之前，最好先看下[[应用安装机制|普通应用安装机制]]。<br>
+目前，支持的风格类型有四种：'''全站风格（site）'''、'''个人中心风格(space)'''、'''版块风格(forum)'''、'''专题风格(portal)'''。
+
+== 风格包结构 ==
+风格包的安装目录，各种风格类型的目录分别如下：
+<pre>
+全站风格             =====      www/themes/site
+个人中心风格          =====      www/themes/space
+版块风格             =====      www/themes/forum
+专题风格             =====      www/themes/portal
+</pre>
+风格安装过程中，将会根据你的风格类型，安装到相应的目录，包名和应用别名保持一致。
+<pre>
+风格目录结构：
+---css       (可选，css存放目录，开发好的css文件放在css下的dev目录，模板里通过特殊变量路径获取，      
+------dev        风格的css路径标签为{@theme:css},可以获取到当前使用风格的css目录)
+
+---images   （可选，图片存放目录，模板里通过特殊变量路径获取，图片路径标签为{@theme:images}，
+             可以获取到当前使用风格的images目录）
+
+---js       (可选，风格js目录，开发好的js文件放在js下的dev目录，
+------dev      可使用路径标签{@theme:js}来获取到当前风格的js目录）
+
+---template  (可选，模板目录，与www/template中的目录结构相对应，按照模块分文件夹存放)
+
+---Manifest.xml     （必须， 风格安装配置文件， 在风格安装包根目录下）
+</pre>
+
+== 风格安装流程 ==
+
+1. 本地安装流程(大部分和应用安装一样，但安装流程更简单些)
+<pre>
+    1. 本地上传 
+ -> 2. 解压文件包 
+ -> 3. 解析并验证应用安装配置文件Manifest.xml（验证信息包含：编码、版本支持、安装包的完整性） 
+ -> 4. 初始化应用安装环境信息 
+ -> 5. 执行安装流程如下:
+       验证风格是否安装，alias目录是否已存在 
+       -> 注册风格信息 
+       -> 拷贝风格包到相应安装目录
+ -> 6. 清理临时文件信息并完成风格安装（过程中出现错误则执行 rollback 操作 回滚生成的数据信息）
+</pre>
+
+2. 在线安装 
+
+下载安装包 -> 流程同上（从第2步开始）
+
+== Manifest ==
+可以参考项目工程目录中 src/application/appcenter/conf/Manifest.xml （响应变化比较快）
+ 
+<pre>
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>	
+<application>		
+    <name>nextwind风格包</name>                  <!-- 必填 应用名称，将显示在应用列表中 -->		
+    <alias>nextwind</alias>	                  <!-- 必填 不可重复 应用别名，和目录包名保持一致， 用于系统唯一标识该应用  -->		
+    <version>1.0.0</version>	                  <!-- 必填 应用版本信息 -->
+    <type>style</type>	                          <!-- 必填 应用类型为风格 -->
+    <style-type>site</style-type>                 <!-- 必填  风格类型：(看概述中列举的风格类型)-->
+    <pw-version>0.8.0</pw-version>                <!-- 必填 支持的PW版本信息，多个版本用逗号分割 -->			
+    <description>phpwind 9.0最新小清新风格</description>    <!-- 可选 应用描述信息，将显示在应用列表，用来描述应用特点、案例、使用方式等 -->		
+    <charset>UTF-8</charset>		          <!-- 必填 应用编码信息，标识该应用包的编码类型-->
+    <website>http://path/to/homepage</website>	  <!-- 可选 应用主页信息-->	
+    <author-name></author-name>		          <!-- 可选 作者名称-->
+    <author-email></author-email>		  <!-- 可选 作者email-->
+    <author-icon></author-icon>	                  <!-- 可选 应用的图标地址-->
+</application>		
+</manifest>
+</pre>
+=== 应用配置说明 ===

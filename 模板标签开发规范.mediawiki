@@ -1,0 +1,178 @@
+==前言==
+在windFramework（之后简称WF）框架，提供了自由的标签自定义功能，9.0在WF提供的几个默认常用标签之后，重新实现了几个特色的模板标签，比如segment,hook。
+本文列举9.0里支持的标签使用方法。
+标签分为输出标签系列{}和html小部件扩展（如<hook>）。用户在开发的时候应该根据情况选择使用何种标签。
+
+==输出标签系列==
+该系列主要是归纳一些直接输出的标签规范，没有复杂的模板应用。
+
+===变量输出：{$varName}===
+用于在模板中输出一个模板里的变量，只支持简单变量输出。如果是复合变量如array/object，需要根据其自身的方式调用输出，
+如array： {$varName[1]}...
+如果是object，支持{$varName->name}、{$varName->getName()}。
+
+变量输出支持格式处理，默认的输出都将进行htmlspecialchars处理，此外支持如下格式输出：
+* {$var|html} : 直接输出变量，不进行任何处理
+* {$var|json} : 将变量进行json处理之后输出
+* {$var|text} : 将变量过滤html/php标签之后输出，即输出纯文本内容
+
+===方法调用：{@func($var1, $var2)}===
+用于在模板中调用一个方法，比如调用用户头像的方法{@Pw::getAvatar(2)}。
+
+===url构建输出：{@url:m/c/a?var=1}===
+用于在模板中构建一个url地址，接受的参数形式是由m(模块如u)、c(控制器如index)、a(调用方法如run)根据m/c/a(如u/index/run)的形式组成，同时也可以接受url参数.
+比如{@url:bbs/thread/run?fid=$fid}，则根据传入的$fid不同将产生不同版块的对应访问路径。
+
+{{NOTE|content=注意：使用该标签则在模板编译之后，该标签的位置将会以构建出来的真实url地址代替。所以在非debug模式下，如果是更改过模板之后，一定要重新编译该模板，如果更换了后台的rewrite规则，也请重新编译模板，不然将不会生效。}}
+
+===获取当前风格下的相关静态资源目录{@theme:}===
+该标签用户获取当前风格下的图片images/样式css/脚本JS的目录路径，它有两种用法：
+*第一种是直接获取当前类型下的，{@theme:images}，比如当前是在论坛下则获取forum下，如果当前是在空间则获取空间的images目录; 
+*第二种是夸类型获取，{@theme:site.images}，比如头部文件，我们一般都是指定调用site类型下的images目录。
+风格的<b>类型</b>目前有如下几种：
+*site: 整站
+*portal: 门户
+*forum：论坛
+*space：空间
+
+可调用的<b>目录</b>包括images/css/js
+{{NOTE|content=注意：需要注意的是，如果该目录不存在则就是一个404,所以在使用的时候需要考虑风格之间的通用性}}
+
+
+===获取全局资源变量：{@G:url.*}===
+该标签主要提供方式获取全局的一些资源变量，如{@G:url.attach} 获取附件目录
+目前支持的资源路径包括：
+*base:    根url
+*res: 静态资源目录
+*css：全局的CSS样式目录
+*images：全局的images图片目录
+*js： 全局的脚本目录
+*attach: 整站的附件目录
+*extres： 应用包静态资源目录
+
+===站点配置信息的调用标签{@C:namespace.name}===
+获取站点中相关的配置信息，接受格式为配置的命名空间和具体的配置名字用.号链接访问。
+比如{@C:site.info.url}将去获取site这个配置空间下的info.url这个配置的值并输出。
+
+==html小部件扩展==
+该类型的标签往往带着模板片段的处理，同时可能含有复杂的业务处理逻辑。
+
+===模板片段标签：template===
+template标签的应用在9.0里可以说随处可见，在重复利用代码片段还是清晰模板上都起到了很好的作用。该标签的作用，就是将被调用的子模板片段在运行的时候载入到调用template位置。
+<pre>
+用法： <template source='' suffix='' load='true' />
+属性说明：
+  source: 子模板路径
+  suffix: 子模板的后缀
+  load: 是否直接载入到当前位置：默认为true，如果是true则该子模板编译之后直接将该编译结果放到该引入处。如果为false：则该子模板将会已单独的编译文件保持到编译目录。
+举个例子：
+    <template source="TPL:common.header_login" load="true" />
+</pre>
+
+===多个模板片段标签：segment===
+该模板标签，支持用户将多个模板片段放在同一个模板文件中，减少文件的载入，每个片段用特定的标签分割，在调用的时候再制定需要调用的片段。
+<pre>
+用法：<segment name='' tpl='' args='' alias=''/>
+属性说明：
+  name：调用的模板中的某个模板片段
+  tpl：模板片段所在的模板文件
+  args：传递给模板片段的参数
+  alias： 别名，tpl编译之后保持的保存的编译文件名
+
+在tpl模板中的片段采用如下标签做分割：
+  <hook-action name="minilist" args="v">
+  </hook-action>
+hook-action 说明：
+  name： 该模板片段的名字，对应segment中的name
+  args：接着的模板片段中作用域的参数，对于segment中传递过来的args， 该args的定义，可以将该模板和使用的参数分开来，脱离具体的业务定义。就相当与方法的定义和方法的使用。
+举个例子：
+  <segment alias='notice_list' tpl="notice_segment_task" args='$detailList,$notice,$prevNotice,$nextNotice' name="detail" />
+
+/**
+*调用notice_segment_task模板片段中detail的片段，传入该片段的参数列表为$detailList,$notice,$prevNotice,$nextNotice，
+*同时该模板的编译文件以notice_list为名保存（注意该名字只是编译文件名中的一部分）
+*/
+</pre>
+
+===组件调用标签：component===
+该标签用于在模板中调用某一个组件，实现在模板中某个位置载入需要的一个组件。
+*用法：<component name="test" args="" action=“”/>
+ 或是<component name="test" args="" class=”” method=”” tpl=”” suffix=””/>
+*属性说明：
+::name： 组件的名字--对应组件配置conf/pwcomponents.php中配置
+::args: 传递的参数
+----
+::class: 调用组件类路径
+::method：调用组件类中的方法
+::tpl：该组件对应的展示模板
+::suffix：展示模板使用的后缀
+----
+::action：m/c/a子action请求
+举个例子：
+<pre>
+<component tpl=' TPL:link.link' class='SRV:link.srv.PwLinkService' method='getLinksByType' args='我是参数'/>
+/**
+*将会调用SRV:link.srv.PwLinkService中的 getLinksByType方法，同时将“我是参数”作为参数传递给该方法.
+*该方法之后调用 TPL:link.link模板展示，模板中的可以使用变量$__tpl_data为该方法返回的值。
+*/
+</pre>
+
+[[业务组件列表]]
+
+===页面中调用钩子标签：hook===
+在页面中某个位置嵌入一个hook。有关hook请看相关hook的文档说明。
+*用法：<hook name="" class="" method="" args = “" alias='' />
+*属性说明：
+::name: 钩子名字
+::class: 调用的类对象（注意为实例对象或是支持静态调用的类名）
+::method: 调用的方法
+::args: 传递的参数
+::alias: 该钩子的模板编译缓存的位置
+举个例子：
+<pre>
+<hook name='hookName' class=' object' method='displayHtmlFromBeforeContent' />
+</pre>
+
+
+===语言包标签，在模板中调用语言包里的文本：lang===
+在页面中调用i18n语言包中的文本，支持语言包中的变量替换。
+*用法：<lang message = '' args = 'array()'/>
+*属性说明：
+::messag: i18n格式的标签key:如USER:success
+::args: 该条信息接受的替换变量
+举个例子：
+<pre>
+<lang message=”USER:success”/>
+</pre>
+
+===分页标签：page===
+WF也提供了一个默认的page标签，但是9.0里重定义了该标签的实现。该标签是用于分页的展示。
+*用法：<page tpl='' current='' count='' per='' url='' args='' />
+*属性说明：
+::tpl：分页的模板路径
+::url：分页跳转url
+::total：总页数//可以不写会自动计算
+::page：当前页
+::count：总条数
+::per：每页显示的条数
+::args：分页附带的参数
+举个例子：
+<pre>
+<page tpl="TPL:common.page" url="task/index/run" page="1" count="10" per="5" />
+</pre>
+
+
+===广告标签：advertisement===
+该标签用于在一个广告位载入一个广告。
+*用法：<advertisement id="" sys=‘1’ />
+*属性说明：
+::id：广告位ID
+::sys：是否为默认广告位
+举个例子：
+<pre>
+<advertisement id='Site.FloatLeft' sys='1'/>
+</pre>
+
+
+===门户标签：design===
+:该部分将会在门户这个专题中给出，此处不再赘述。[[门户标签使用规范]]

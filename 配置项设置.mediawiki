@@ -1,0 +1,53 @@
+ 本篇主要介绍 PwConfigSet 类库的使用
+== 功能 ==
+本类库的功能是在全局配置中增加或更改配置项<br />
+通常在后台使用<br />
+[[配置项介绍]]
+
+== 接口 ==
+{| class="wikitable"
+|-
+! 方法 !! 简介 !! 参数 !! 返回值
+|-
+| set || 设置一个配置选项 || string $name 配置项<br>mixed $value 配置值<br>string $descrip 描述 || return PwConfigSet
+|-
+| flush || 将数据持久化到数据库 || || return void
+|}
+
+== 调用方法 ==
+<pre>
+$config = new PwConfigSet('site');
+$config->set('info.name', $this->getInput('infoName', 'post'))
+	->set('info.url', $this->getInput('infoUrl', 'post'))
+	->set('info.mail', $this->getInput('infoMail', 'post'))
+	->set('info.icp', $this->getInput('infoIcp', 'post'))
+	->set('info.logo', $this->getInput('infoLogo', 'post'))
+	->set('statisticscode', $this->getInput('statisticscode', 'post'))
+	->set('visit.state', $this->getInput('visitState', 'post'))
+	->set('visit.group', $this->getInput('visitGroup', 'post'))
+	->set('visit.gid', $this->getInput('visitGid', 'post'))
+	->set('visit.ip', $this->getInput('visitIp', 'post'))
+	->set('visit.member', $this->getInput('visitMember', 'post'))
+	->set('visit.message', $this->getInput('visitMessage', 'post'))
+	->flush();
+</pre>
+
+== 配置域 ==
+<pre> new PwConfigSet('site')</pre>
+上述示例代码中的site，我们称之为配置域
+
+=== 全局配置域 ===
+# site
+# credit
+# bbs
+# attachment
+# components
+# seo
+# nav
+上述几个被成为全局配置域，这意味着所有配置到这些域中的的配置会被生成到一个统一的缓存文件 /data/cache/config.php 中
+
+== 插件配置规范 ==
+为防止插件之间配置项命名冲突，我们作如下约定：
+# 独立配置域 配置域命名规则为 app_'''sign'''
+# 公共配置域 对于某些配置到公共配置域的配置项，配置项加前缀 app.'''sign'''
+'''sign''' 为你插件的唯一标识符

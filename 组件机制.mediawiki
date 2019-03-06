@@ -1,0 +1,41 @@
+ 组件工厂机制是wind框架核心的基础。它基于Ioc控制反转和依赖注入的技术实现，为整个框架提供了松耦合的组件管理机制，从程序逻辑中分离出类的依赖关系和配置
+== 组件是什么 ==
+* 组件通常是具有相对独立功能、接口由契约指定、和语境有明显依赖关系、可独立部署、可组装的功能实体。比如我计划从杭州到北京旅行，我需要考虑一个交通方案，我可以坐飞机、坐动车也可以坐汽车，那么交通方案其实就可以看作一个组件，坐飞机只是该组件的其中一个实现方案。
+* 组件的核心思想是面向接口编程而不是面向实现
+* 组件的原始需求是你提供的解决方案可替代
+
+== 组件的使用 ==
+* 框架的组件定义在配置文件 /conf/components.php 中
+* 组件可以在 Wekit::C('components') 中重定义，但是有部分组件先于重定义之前就会被执行，所以可能无法生效。如果需要修改那些组件，需要在上述1中进行配置，比如router（路由组件）
+* 组件的调用方法 Wind::getComponent('security')
+* 组件的替换，通常不会影响业务功能。比如storage（附件存储组件），可以选用本地存储、ftp存储、或者阿里云提供的Oss云存储；还有部分组件比如windView（模板引擎组件），如果你选用另外一个比如Smarty，那意味着你的模板编写方式也会随之改变。
+
+== 组件的配置方法 ==
+<pre>
+	'security' => array(
+		'path' => 'WIND:security.WindXxtea',
+		'scope' => 'singleton',
+	)
+</pre>
+ 组件的可选配置参数：
+* path 使用的类库方法路径
+* scope
+* config
+
+== 组件开发 ==
+* 组件开发是底层代码二次开发一个重要的方向
+* 比如开发一个router，实现网站任意的url组织规则和rewrite
+
+== 组件列表 ==
+* security 安全加密组件
+:# WindXxtea 基于xxtea加密算法实现
+:# WindMcryptCbc 基于cbc算法实现的加密组件
+* storage 附件存储组件
+:# PwStorageLocal 基于本地附件存储方案的实现
+:# PwStorageFtp 基于ftp远程附件存储方案的实现
+* httptransfer http远程通信组件
+:# WindHttpCurl 基于Curl的实现
+:# WindHttpSocket 基于fsockopen的实现
+:# WindHttpStream 基于stream_context_create的实现
+* router 路由组件
+:# WindRouter 多策略

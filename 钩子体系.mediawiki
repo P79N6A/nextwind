@@ -1,0 +1,114 @@
+== 什么是钩子 ==
+* '''钩子''' 是指在系统执行过程中加入你自己的处理去接管或改进系统的默认处理来达到自己期望的目的
+* '''埋点'''  预先在程序中可能扩展的地方埋下钩子，当程序执行到该点时，会启动所有挂载到该钩子下的程序<br />
+* '''DO'''  被埋在某个钩子下的辅助功能类库<br />
+
+== 钩子执行方式 ==
+# '''runDo'''：全部运行,无状态<br />
+# '''runWithVerified'''：当有一个方法出错(不返回true)时，中断运行<br />
+# '''runWithFilters'''：自上而下传递$value变量<br />
+
+== 安装与卸载 ==
+# 插件开发的时候，配置Manifest.xml
+# 安装程序自动导入到系统中
+# 卸载插件的时候，自动删除
+<pre>
+<hook-name name="s_permissionConfig">                                       <!-- 钩子名称 -->           
+    <alias name="app_reply_reward">                                 <!-- 扩展别名 -->   
+        <class>EXT:replyreward.service.srv.App_ReplyReward_ReplyRewardConfigService</class>      
+        <method>getPermissionConfig</method>                 
+        <loadway>load</loadway>                 
+        <expression></expression>
+        <description>回帖奖励 - 后台设置</description>             
+    </alias>        
+</hook-name>
+</pre>
+
+== 钩子的类型 ==
+
+=== Simple-Hook ===
+:* '''目的'''  将一个类的某个方法挂载到某个位置，该种类型钩子通常埋在DAO、DS和SERVICE中<br />
+:* '''埋点方式'''   PwSimpleHook::getInstance('hook_key')->runDo($param);<br />
+:* '''钩子信息注册'''  Array(KEY => VALUE) 
+::{| class="wikitable"
+|-
+! 键值名称(KEY) !! 说明(VALUE)
+|-
+| class || 指定的类名服务,例：
+:SRV:forum.dao.PwThreadsIndexDao
+|-
+| method || 调用的方法名,例：
+:addThread
+|-
+| loadway || 类加载方式，取值范围
+# '''load'''    service单列加载方式
+# '''loadDao'''  dao加载方式
+# '''new'''    new方式实例化
+|}
+:* '''需要实现'''  实现一个类，比如上面的PwThreadsIndexDao类，再实现addThread方法，如下代码示例
+<pre>
+<?php
+class PwThreadsIndexDao extends PwBaseDao {
+	
+	protected $_table = 'bbs_threads_index';
+	protected $_pk = 'tid';
+	protected $_dataStruct = array('tid', 'fid', 'disabled', 'created_time', 'lastpost_time');
+	protected $_threadTable = 'bbs_threads';
+	
+	public function addThread($tid, $fields) {
+		$fields['tid'] = $tid;
+		return $this->_add($fields, false);
+	}
+}
+?>
+</pre>
+
+=== Model-Hook ===
+:* '''目的'''  将一个满足BP扩展服务接口约定（xxxDoInterface）的类（DO）挂载到BP中，随着BP的运行自动调用DO中的相应方法，通常DO中有一系列方法，但是方法之间可以互相通信<br />
+:* '''埋点方式'''  该BP继承PwBaseHookService，hook_key默认为该BP的类名，当该BP被实例化后，将自动启动所有挂载到该钩子下的类<br />
+:* '''钩子信息注册'''  Array(KEY => VALUE) 
+::{| class="wikitable"
+|-
+! 键值名称(KEY) !! 说明(VALUE)
+|-
+| class || 指定的类名服务,例：
+:HOOK:PwPost.do.PwPostDoFresh
+|-
+| expression || 类的加载条件，条件表达式,例：
+:flashatt.post!=0
+|}
+:* '''需要实现'''  比如一个发帖服务类PwTopicPost（BP）需要实现扩展，那么该BP必然会定义一个扩展服务接口（比如：PwPostDoBase），那么你需要实现一个类(比如：PwPostDoFresh) 继承PwPostDoBase并实现其定义的所有接口
+
+=== Controller-Hook ===
+:* '''目的'''  跟Model-Hook一样，但是Model-Hook生成的DO没有与外界交互（指类似于controller中接受用户输入参数）的能力，所以Controller-Hook为其扩展了该能力，使得DO可以携带用户输入的信息，该种类型钩子被埋在controller中<br />
+:* '''埋点方式'''  $this->runHook('hook_key', $BP);<br />
+:* '''钩子信息注册'''  Array(KEY => VALUE) 
+::{| class="wikitable"
+|-
+! 键值名称(KEY) !! 说明(VALUE) 
+|-
+| class || 指定的类名服务,例：
+:SRV:forum.srv.post.injector.PwPostDoPollInjector
+|-
+| method || 调用的方法名,例：
+:run
+|-
+| expression || 类的加载条件，条件表达式,例：
+:flashatt.post!=0 
+|}
+:* '''需要实现'''  实现一个类，比如上面的PwPostDoPollInjector类，再实现run方法，但是该方法必须返回一个满足该BP扩展服务接口的对象，以便将其注入到BP中
+
+== 钩子在模版中的调用 ==
+ 为了在模板中更便利地使用钩子，模板引擎定义了一个hook标签，使用方法如下
+* Simple-Hook 
+<pre><hook name="space_nav" args="array($space, $src)" /></pre>
+等价于
+<pre>PwSimpleHook::getInstance('space_nav')->runDo($space, $src);</pre>
+
+* Model-Hool
+<pre><hook class='$threadDisplay' method='displayHtmlFromAfterUserInfo' args="array($users[$read['created_userid']], $read)" /></pre>
+等价于
+<pre>$threadDisplay->displayHtmlFromAfterUserInfo($users[$read['created_userid']], $read);</pre>
+
+== 钩子列表 ==
+* [[HOOK|钩子列表]]

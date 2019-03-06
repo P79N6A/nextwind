@@ -1,0 +1,70 @@
+=== phpwind作为独立系统设置： ===
+本设置为phpwind不带任何客户端，作为独立系统的配置
+* 后台：创始人->WindID设置  选择“作为独立系统”
+* 后台：创始人->客户端管理->添加客户端
+   客户端名称：客户端站点的名称
+   客户端地址：客户端站点的访问地址
+   客户端编码：客户端站点的网页编码
+   客户端接口文件：客户端站点的通知接口文件，默认为windid.php,可以命名为你站点的接口文件名，可以带参数
+   通讯密钥：用于与客户端通讯的加密字串，自动生成或手工修改，建议不小于20位
+   同步登录：客户端站点是否需要要与其它客户端同步登入登出
+   同步通讯：客户端站点是否接收同步通知   
+* 后台：全局->附件设置->头像设置
+   如果需要附件分离存储，需要在这里设置
+* 修改文件conf\windidconfig.php 
+   return array( 
+   ''''windid' => 'local', 把windid设置为client   //client:作为客户端    server.作为服务端    local.独立系统''' 
+   'serverUrl' => 'http:/ /www.phpwind.net',  设为服务端访问地址
+   'clientId' => '1', 	该客户端在WindID服务端里的id
+   'clientKey' => '123456',  通信密钥，请保持与WindID服务端生成的一致
+   'clientDb' => 'mysql',   mysql为本地连接  http远程连接  如为mysql，请同时配置database.php里的数据库设置
+   'clientCharser' => 'utf8', 客户端使用的字符编码
+   );
+
+=== phpwind作为服务端设置： ===
+本配置为该phpwind作为其它客户端的服务端运行。
+
+* 后台：创始人->WindID设置  选择“作为服务端”
+* 后台：创始人->客户端管理->添加客户端
+   客户端名称：客户端站点的名称
+   客户端地址：客户端站点的访问地址
+   客户端编码：客户端站点的网页编码
+   客户端接口文件：客户端站点的通知接口文件，默认为windid.php,可以命名为你站点的接口文件名，可以带参数
+   通讯密钥：用于与客户端通讯的加密字串，自动生成或手工修改，建议不小于20位
+   同步登录：客户端站点是否需要要与其它客户端同步登入登出
+   同步通讯：客户端站点是否接收同步通知   
+* 后台：全局->附件设置->头像设置
+   此设置将影响所有使用此服务端的客户端站点，用于头像设置与客户端其它附件存储分离
+* 修改文件conf\windidconfig.php 把'windid' => 'local' 改为'windid' => 'server' 
+   return array( 
+   ''''windid' => 'server', 把windid设置为client   //client:作为客户端    server.作为服务端    local.独立系统''' 
+   'serverUrl' => 'http:/ /www.phpwind.net',  设为服务端访问地址
+   'clientId' => '1', 	该客户端在WindID服务端里的id
+   'clientKey' => '123456',  通信密钥，请保持与WindID服务端生成的一致
+   'clientDb' => 'mysql',   mysql为本地连接  http远程连接  如为mysql，请同时配置database.php里的数据库设置
+   'clientCharser' => 'utf8', 客户端使用的字符编码
+   );
+
+=== 客户端接入设置: ===
+* 后台：创始人->WindID设置  选择“作为客户端”
+* 修改文件src\windid\conf\config.php  该文件用于设置与服务器的通讯行为
+   return array( 
+   ''''windid' => 'client', 把windid设置为client   //client:作为客户端    server.作为服务端    local.独立系统''' 
+   'serverUrl' => 'http:/ /www.phpwind.net',  设为服务端访问地址
+   'clientId' => '1', 	该客户端在WindID服务端里的id
+   'clientKey' => '123456',  通信密钥，请保持与WindID服务端生成的一致
+   'clientDb' => 'mysql',   mysql为本地连接  http远程连接  如为mysql，请同时配置database.php里的数据库设置
+   'clientCharser' => 'utf8', 客户端使用的字符编码
+   );
+* 修改文件src\windid\conf\database.php  该文件用于设置与windid服务器的数据库连接，如果config.php文件里clientDb设置为http,不需要设置此文件
+   return array(
+    'dsn' => 'mysql:host=localhost;dbname=windid;port=3306',  数据库地址|库名|端口
+    'user' => 'root',	 数据库用户名
+    'pwd' => '123456',	 数据库密码
+    'charset' => 'utf8', 数据库编码方式
+    'tableprefix' => 'pw_' 表前缀
+   );
+
+=== 通讯测试: ===
+* 通讯测试成功的条件是：1、客户端与服务端按照上面要求正确设置  2、客户端通知接收文件实现了通知的test方法，详情参考  [[WindID客户端接口开发说明]]
+* 通讯成功后如果客户端已有用户数据，需要手工转换到WindID的用户数据库，之后所有客户端将共享WindID的用户资料，工具转换参考  [[WindID用户转换工具]]

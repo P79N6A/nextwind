@@ -1,0 +1,158 @@
+== 应用包结构 ==
+应用包安装目录 '''src/extensions''' 应用包将会被安装到这个目录下， 包名和应用别名保持一致。
+<pre>
+应用目录结构：
+------admin    (可选，后台管理模块)
+------controller （可选，前台管理模块）
+------conf      （配置目录，存储配置信息，数据表安装信息，默认数据信息等，如果这些都没有该目录可选）
+------service   （可选，数据服务目录，如果没有核心服务，例如你只输出hello那么该目录可选）
+***------template  （关于模板与静态资源存放目录已经访问规则待定）</pre>
+Manifest.xml     （必须， 应用安装配置文件， 在应用安装包根目录下）
+
+== 应用安装流程 ==
+
+1. 本地安装流程
+
+1. 本地上传 -> 2. 解压文件包 -> 3. 解析并验证应用安装配置文件Manifest.xml（验证信息包含：编码、版本支持、安装包的完整性） -> 4. 初始化应用安装环境信息 -> 5. 执行安装流程如下:
+
+验证应用是否安装、需要挂载的钩子是否存在、注入的扩展是否正确等 -> 挂载外部应用安装处理程序（根据当前应用包提供的） -> 注册应用信息 -> 注册钩子信息 -> 注册扩展信息 -> 注册组建信息 -> 加载数据文件,安装默认数据 -> 
+
+6. 清理临时文件信息并完成应用安装（过程中出现错误则执行 rollback 操作 回滚生成的数据信息）
+
+2. 在线安装 
+
+下载安装包 -> 流程同上（从第2步开始）
+
+3. 纯在线应用安装
+
+根据app_id读取app信息并初始化应用安装环境信息 -> 流程同上（从第5步开始）
+
+
+
+== 应用压缩包格式要求 ==
+ 
+−	
+1.安装包格式是zip
+ 
+−	
+2.安装包最大不能超过10m
+ 
+−	
+3.安装包格式必须为gbk或者utf8。上传后会自动转换为gbk，utf8，big5 3种格式的包
+ 
+−
+4.安装包内的应用放置路径为：zip->应用包名（如：bank）->应用文件（必须有Manifest文件）
+
+−	
+5.添加应用时类型选择了应用，Manifest中的type必须为app
+ 
+−	
+6.添加应用时类型选择了模板，Manifest中除了type是style外，style-type必填
+ 	
+    style-type可填字段：  site  整站模板	
+                          space 个人空间
+                          forum 版块模板
+                          special 门户模板
+ 	
+    
+ 
+−	
+7.Manifest中alias别名必填，格式是 ‘公司或个人名_应用名’，如：phpwind_bank 首字母必须是英文字符，名称中只能有英文字符、数字和下划线。别名不能和线上应用重复
+ 
+−	
+8.Manifest中的encoding必须与文件编码一致，即gbk或utf8
+
+== Manifest ==
+可以参考项目工程目录中 src/application/appcenter/conf/Manifest.xml （响应变化比较快）
+ 
+<pre>
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>	
+<application>		
+    <name>wind management</name>                  <!-- 必填 应用名称，将显示在应用列表中 -->		
+    <alias>alias</alias>	                  <!-- 必填 不可重复 应用别名，和目录包名保持一致， 用于系统唯一标识该应用，
+                                                       格式为(公司或个人名_英文别名)，例如phpwind_bank-->		
+    <version>1.0.0</version>	                  <!-- 必填 应用版本信息 -->		
+    <pw-version>0.8.0</pw-version>                <!-- 必填 支持的PW版本信息，多个版本用逗号分割 -->			
+    <description>wind management</description>    <!-- 可选 应用描述信息，将显示在应用列表，用来描述应用特点、案例、使用方式等 -->		
+    <charset>UTF-8</charset>		          <!-- 必填 应用编码信息，标识该应用包的编码类型-->
+    <website>http://path/to/homepage</website>	  <!-- 可选 应用主页信息-->	
+    <author-name></author-name>		          <!-- 可选 作者名称-->
+    <author-email></author-email>		  <!-- 可选 作者email-->
+    <author-icon></author-icon>	                  <!-- 可选 应用的图标地址-->
+</application>		
+	
+<!-- 数据注册 -->
+<!-- 需要执行的sql语句请放在应用目录下的conf/data.sql文件中 -->
+
+<!-- 资源文件目录，安装时候将把目录下的资源文件转移到www/themes/extres/{alias}下，
+	     模板里可通过{@G:url.extres}/{alias}访问资源文件-->
+<res>res</res>
+<!-- 当应用有额外需要清理的数据，例如注册到核心表的数据，运行时生成的临时文件等，可通过继承AbstractPwAppUninstall实现你的uninstall方法 -->
+<uninstall>EXT:album.srv.service.PwAlbumUninstall</uninstall>
+<!-- 安装程序时需要调用的安装服务，该标签的值为安装服务别名 -->	
+<installation-service>nav_main,nav_bottom,nav_my</installation-service>
+
+<!-- 应用钩子注册 -->	
+<hooks>		
+    <hook-name>	                     <!-- 钩子名称 -->		
+      <documents>			
+       <description></description>   <!-- 钩子描述，接收一串描述字符串，表述钩子的定义的位置，作用以及使用方法，调用类型
+                                          (run,verify...) -->
+       <param></param>		     <!-- 钩子定义的参数类型列表说明，接收一串描述字符串，表述参数类型意义是否可选填等信息 -->
+       <interface></interface>	     <!-- 钩子定义对扩展接口返回值要求，接收一串描述字符串，表述是否需要返回值，返回值类型等 -->	
+      </documents>		
+    </hook-name>	
+</hooks>	
+
+<!-- 扩展注册 -->	
+<inject-services>		
+<hook-name>                               <!-- 钩子名称 -->			
+    <alias>				  <!-- 扩展别名 -->	
+        <class></class>			  <!-- 必填 扩展实现类的绝对路径地址， 路径别名方式 -->		
+        <method></method>		  <!-- 根据钩子类型不同 可选 自定义扩展执行方法 -->			
+        <loadway></loadway>		  <!-- 可选 默认 load加载方式 -->			
+        <expression></expression>	  <!-- 可选 填写钩子执行表达式，当表达式成立时执行该挂载，在 Controller 类型的钩子位置可用 -->		 		
+        <description></description>	  <!-- 扩展定义描述信息，接收一串字描述字符串， 表述扩展定义的功能作用 -->			
+    </alias>		
+</hook-name>	
+</inject-services>
+
+</manifest>
+</pre>
+=== 应用配置说明 ===
+=== 如何定义Hook ===
+=== 如何注入Injector ===
+在后台应用-hook管理中，有一个hook列表，里面列出了系统中已经用到的钩子和挂在这些钩子下的扩展，可以查看每个钩子的详细信息。也可以查看conf/hooks.php，文件中同样记录了系统级的钩子和扩展信息。<br>
+以相册中设置头像的同时把图片保存到头像相册的需求为例：<br>
+首先我们通过后台hook列表，了解到在设置头像里已经埋了一个钩子为'''s_update_avatar'''，<br>
+关于这个钩子的参数和返回值信息如下：
+<pre>
+@param int $uid 设置头像的用户
+@return void
+</pre>
+那么我们需要开发一个基于此钩子的扩展PwPhotoUploadAvatarDo，里面我们依照上述的钩子信息定义了扩展方法
+<pre>
+void function uploadAvatar($uid) {
+。。。。。blabla。。。。。
+}
+</pre>
+方法中实现了保存到头像相册的需求。<br>
+开发完毕后，我们需要把这个扩展记录到Manifest.xml中，以便应用安装的时候进行注册。<br>
+依据上面manifest配置项的说明，我们在inject-services中加入了一个扩展配置，别名为album
+<pre>
+<inject-services>
+	<hook-name name="s_update_avatar">
+                <!--自由定义的扩展别名-->
+		<alias name="album">
+                        <!--这里是我们扩展的实现类-->
+			<class>SRC:extensions.album.service.srv.PwPhotoUploadAvatarDo</class>
+			<loadway>load</loadway>
+			<method>uploadAvatar</method>
+		</alias>
+	</hook-name>
+</inject-services>
+</pre>
+附：'''为了方便本地测试开发，可以在后台hook列表中，找到要扩展的钩子，选择添加Injector来给这个钩子增加一个扩展，方便本地调试开发。'''
+
+=== 如何扩展组建 ===

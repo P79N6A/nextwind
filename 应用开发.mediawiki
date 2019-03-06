@@ -1,0 +1,215 @@
+== 什么是应用 ==
+我们知道phpwind9.0的基础是WindFramework框架，使用框架我们可以快速开发出论坛、博客、微博以及SNS等程序。<br />
+如果框架支持使用同一份框架代码部署多套程序，并且能独立使用，那么我们称之为多应用开发模式。<br />
+而此时论坛、博客等都只是该框架的其中一个应用而已。<br />
+应用这个概念就是来源于此。<br />
+
+phpwind9.0虽然是个论坛程序，但是大部分功能其实都自成体系。<br />
+我们努力将其拆分成各个独立的系统，而后又通过内在业务逻辑关联起来。<br />
+所以phpwind9.0其实是多个应用的有机整体，比如bbs（论坛核心）、space（空间）、tag（话题）、poll（投票）等。<br />
+我们的部分程序代码目录就是根据应用来划分的，比如 /src/applications 和 /www/template<br />
+而新建一个应用其实也很简单，只要在上述两个目录下，新建一个目录（应用名），放置代码就可以了
+
+== 创建一个应用 ==
+ 创建一个应用需要做以下几个步骤：
+* 想一个应用名称，比如bbs（论坛）
+:# 在 src/applications/ 目录下同时建一个目录bbs
+:# 在 www/template/ 目录下建一个目录bbs
+* 需求分析，规划业务模块
+:# 复用公共业务库(src/service/)模块 如果有现成模块可使用，可直接使用
+:# 创建公共业务库(src/service/)模块
+:# 创建私有业务库模块
+* 按照下节开发步骤，逐步进行
+
+== 代码流动图 ==
+ 在大致了解了phpwind9.0架构和代码分布之后，终于进入了正题，那么首先来看一下phpwind9.0一次请求大致是个什么样的流程。
+[[文件:codeflow.jpg]]
+<br>上图是phpwind9.0一次请求的主干代码流程图（该图隐藏了部分框架的调用机制，有兴趣的同学可以研究一下框架的前置和后置的filter机制）
+
+== 一般开发步骤 ==
+ 基于Wekit，业务开发将变得及其简单，只需要考虑自身的业务逻辑就行。如果你已经知道你该做什么了，并且已经设计好了，那么就可以按照一下步骤一步一步进行开发。
+[[文件:开发步骤.jpg]]
+
+== 编写Dao ==
+ Dao继承于Wekit中的dao基类（LIB:base.PwBaseDao），里面实现了大部分常用方法
+
+* 方法命名规范
+:使用动宾结构，以下是几个常用的前缀动词
+{| class="wikitable"
+|-
+! 方法 !! 含义
+|-
+| get || 获取数据，通常是根据参数（单数）获取一条或多条数据
+|-
+| fetch || 获取数据，通常是根据参数（复数）获取多条数据
+|-
+| count || 统计，一般是指sql的count方法
+|-
+| add || 增加一条数据
+|-
+| batchAdd || 批量增加多条数据
+|-
+| update || 更新数据，通常是根据参数(单数)更新一条或多条数据
+|-
+| batchUpdate || 更新数据，通常是根据参数(复数)更新多条数据
+|-
+| delete || 删除数据，通常是根据参数(单数)删除一条或多条数据
+|-
+| batchDelete || 删除数据，通常是根据参数(复数)删除多条数据
+|}
+
+* 基本方法
+: 在PwBaseDao基类中实现了表根据主键的CURD基本方法，在派生类中可以继承使用，省去了大部分业务需要编写重复类似代码的麻烦
+:# _get($id)
+:# _fetch($ids, $index = '', $fetchMode = 0)
+:# _add($fields, $getId = true)
+:# _update($id, $fields, $increaseFields = array(), $bitFields = array())
+:# _batchUpdate($ids, $fields, $increaseFields = array(), $bitFields = array())
+:# _delete($id)
+:# _batchDelete($ids)
+
+* sql组装原则
+: 为了防止sql注入，同时保证代码可读性，所有sql语句组装遵循以下原则
+:# sql语句一句写完整
+:# sql语句中不能直接出现变量，所有变量通过占位符?和%s进行替换
+:# ?占位符是用pdo原生机制进行安全过滤的
+:# %s是通过sprintf机制替换，所有通过该机制替换的变量必须经过sql安全组装方法处理
+
+* sql安全组装方法
+{| class="wikitable"
+|-
+! 方法 !! 含义 !!参数
+|-
+| getTable || 获取表名 || string $table 表名
+|-
+| sqlSingle || sql组装,将数组组装成`key`=value的形式返回 || array $array 待组装的数据
+|-
+| sqlSingleIncrease || sql组装,将数组组装成`key`=`key`+value的形式返回 || array $array 待组装的数据
+|-
+| sqlSingleBit || sql组装,将数组组装成类似`key`=`key`|value等位运算形式返回 || array $array 待组装的数据
+|-
+| sqlMulti || sql组装,将数组组装成('a1','b1','c1'),('a2','b2','c2')的形式返回 || array $array 待组装的数据
+|-
+| sqlImplode || sql组装,将数组组装成('a1','b1','c1')的形式返回 || array $array 待组装的数据
+|-
+| sqlLimit || 组装sql limit表达式串,并返回组装后的结果 || int $limit <br>int $offset
+|-
+| sqlMerge || sql组合语句,(sqlSingle, sqlSingleIncrease) `key`=value,`key`=`key`+value || array $updateFields 更新操作的字段 <br> array $IncreaseFields 增减操作的字段 <br> array $bitFields
+|}
+
+* 调用依赖
+:# dao是业务服务的最底层，所以在开发过程中不能调用其他dao,ds,service来完成自身业务，可以使用Wekit提供的方法
+:# dao只允许被其上层ds调用
+
+== 编写Dm ==
+ Dm继承于Wekit中的Dm基类（LIB:base.PwBaseDm），里面定义了Dm的使用规范。
+ Dm承担的主要职责是数据收集和数据校验，所以她可以被认为是一种特殊意义的VO
+* 数据收集
+:# 定义当前Dm所辖Dao范围，通常1个Dm管理1个或多个Dao的数据
+:# 整理出所辖Dao范围内所有字段
+:# 编写所有字段管理方法，通常1个方法管理一个或多个字段
+::# set系列方法 收集直接更新的数据 value=?
+::# add系列方法 收集数值型增减类型的数据 value=value+?
+
+* 数据校验
+:# _beforeAdd 数据插入时，数据完整性校验
+:# _beforeUpdate 数据更新时，数据完整行校验
+
+== 编写Ds ==
+ Ds是被调用最多的服务层代码
+
+* DaoMap
+:# 垂直拆分的表 是指那些原本存放在一张表的信息，由于字段多，数据量庞大，为了提高性能，通过一定的数据库设计原则，拆成多张表。比如user表，被拆分成user、user_data、user_info等
+:# 业务上统一，数据上分离  那些被拆分出来的表，都是由各自Dao管理，但是拆分是技术手段，对于业务而言，一个字段放在哪张表其实是无所谓的
+:# DaoMap就是通过统一机制，消除因表垂直拆分而带来的接口体验，让人感觉好像是多表合一
+:# DaoMap所辖Dao，通常跟Dm是一致的
+:# DaoMap的原理是设计模式中的装饰者模式
+
+* 定义所辖Dao范围
+:# 通常1个Ds管理1个Dao（或DaoMap），此时Ds的方法基本上是Dao的方法映射
+:# 管理多个业务紧密相连的Dao（或DaoMap）,此时Ds的方法可能是所有Dao方法的合集
+
+* 接口规范
+:# 因为基本上Dao的接口映射，所以命名规范跟Dao是一致的
+:# 参数类型校验、过滤 作为公共服务，接口中所有参数必须校验（Dao所有参数来自于Ds，所以认为是可信任的，无需校验）
+:# add和update接口，参数不能使用数组 参数>4个的必须使用Dm，<=4个的参数1个1个写清除，建议都使用Dm
+
+* 调用依赖
+:# 作为Dao的上层，他只允许调用所辖Dao的服务来完成业务，
+:# 不能调用其他Ds，不能调用 Service
+:# 作为公共服务，他能被 Dm，Service，Contoller，View 层代码所调用
+
+== 编写Service ==
+ Service是自由度相当高的代码层，你可以使用任意的设计准则来规划你的代码
+* 调用依赖
+:# 可以调用其他任意的 Service 和 Ds 来完成自身业务
+:# 作为公共服务，他能被 Service，Contoller，View 层代码所调用
+
+== 编写Controller ==
+ Controller继承于Wekit中的Controller基类（LIB:base.PwBaseController），里面实现了大部分常用方法
+* action实现
+:# 每个方法名对应路由规则m/c/a中的参数a
+:# 默认方法run，参数a缺省时调用
+:# 其他方法命名规则 xxxAction
+
+'''注意：在应用中IndexController中的run方法默认为应用前台首页访问，如果不需要首页页面，请不要添加IndexController!!可以用ListController等代替'''
+
+* 常用方法
+{| class="wikitable"
+|-
+! 方法名 !! 含义 !! 参数
+|-
+| getInput || 获取gpc提交过来的参数 || string $name name <br>string $type 来自(GET POST COOKIE)
+|-
+| setOutput|| 将变量设置到模板域中，供模板调用 || mixed $data <br> string $key
+|-
+| setTemplate || 设置页面模板 || string $template
+|-
+| showMessage || 显示成功提示信息 || string $message 消息信息 <br> string $referer 跳转地址 <br> boolean $referer 是否刷新页面
+|-
+| showError || 显示错误提示信息 || string $message 消息信息 <br> string $referer 跳转地址 <br> boolean $referer 是否刷新页面
+|-
+| forwardRedirect || 重定向一个请求到另外的URL || string $url
+|-
+| forwardAction || 重定向一个请求到另外的action || string $action 支持格式:module/controller/action/?args <br>
+	 array $args 参数信息 默认为空数组 <br>
+	 boolean $isRedirect 是否是重定向请求 以url重定向方式跳转<br>
+	 boolean $immediately 是否立即forward
+|}
+
+== 编写template ==
+ 很简单，了解一下几个常用标签就ok啦
+
+{| class="wikitable"
+|-
+! 标签 !! 作用  !! 范例
+|-
+| &lt;!--# #--&gt; || 嵌入原生php代码 || &lt;!--# if ($operateThread) { #--&gt;
+|-
+| <template> || 引入另一个模板文件 || <template source='TPL:common.head' load='true' />
+|-
+| {} || 变量输出 || {$headguide}
+|-
+| {@url:} || 输出url || {@url:bbs/manage/topped} <br> {@url:bbs/thread/run?fid=$fid}
+|-
+| {@C:} || 调用站点配置信息 || {@C:namespace.name}
+|-
+| {@G:} || 调用站点的全局资源信息 || {@G:url.attach} 
+|-
+| {@func} || 调用全局方法的方式  || {@Pw::getAvatar(2)}
+|-
+| <page> || 输出分页代码 || <page tpl="TPL:common.page" page="$page" per="$perpage" count="$count" total="$totalpage" url="bbs/read/run?tid=$tid&fid=$fid&$urlargs"/>
+|-
+| <segment> || 批量加载模板片段标签解析 || <segment tpl="forum_list_table" name="more_across" args="$pwforum->foruminfo,$sub" />
+|-
+| <hook> || hook标签模版钩子 || 简单模板钩子调用<hook name="space_nav" args="array($space, $src)" />
+|-
+| <hook-action> || 模板片段标签配合segment或是hook使用 || <hook-action name="education" args='space'>我是模板片段</hook-action>
+|-
+| <component> || 组件调用 || <component tpl='TPL:link.link' class='SRV:link.srv.PwLinkService' method='getLinksByType' args='友情链接'/>
+|-
+| <lang> || 语言包调用 || <lang message=”USER:success”/>
+|-
+| <advertisement> || 广告标签 || <advertisement id='Site.FloatLeft' sys='1'/>
+|}
+更多详情，请猛击[[模板标签开发规范]]

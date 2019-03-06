@@ -1,0 +1,241 @@
+
+== 代码注释 ==
+* 文件注释
+<pre>
+/**
+ * 帖子基础服务
+ *
+ * @author Jianmin Chen <sky_hold@163.com>
+ * @copyright ©2003-2103 phpwind.com
+ * @license http://www.phpwind.com
+ * @version $Id: PwThread.php 21335 2012-12-05 03:39:26Z jieyin $
+ * @package forum
+ */
+</pre>
+
+* 方法注释
+<pre>
+/**
+ * 获取单个帖子信息
+ *
+ * @param int $tid 帖子id
+ * @param int $fetchmode 帖子资料 <必然为FETCH_*的一种或者组合>
+ * @return array
+ */
+</pre>
+
+== 代码风格 ==
+=== 代码缩进 ===
+在书写代码的时候，必须注意代码的缩进规则，我们约定代码使用一个TAB(4个空白字符宽度)作为缩进
+例子：
+<pre>
+for ($i = 0; $i < $count; $i++) {
+	echo "test";
+}
+</pre>
+
+=== 大括号{}书写规则 ===
+* { 直接跟在控制语句之后，不换行
+* } 与控制语句同列
+* 我们管这种风格的括号叫“埃及括号”
+[[File:aijikuohao.jpg]]
+* 代码示例
+<pre>
+if ($condition) {
+	for ($i = 0; $i < $count; $i++) {
+		echo "test";
+	}
+} else {
+	switch ($var) {
+		case 1: echo 1;break;
+		case 2: echo 2;break;
+		default: echo 3;
+	}
+}
+</pre>
+
+=== 小括号()和函数、关键词等 ===
+小括号、关键词和函数遵循以下规则：
+* 不要把小括号和关键词紧贴在一起，要用一个空格间隔；如
+<pre>if ($a < $b) {</pre>
+* 小括号和函数名间没有空格；如
+<pre>$test = date("ymdhis");</pre>
+* 除非必要，不要在Return返回语句中使用小括号。 如
+<pre>return $a;</pre>
+
+=== 运算符与空格 ===
+运算符两边用空格分隔，如
+<pre>
+$a = 'aaa';
+$b = 3 * 3 % 5;
+$c = true ? 0 : true ? 1 : 2;
+if ($a && $b || $c) {
+	echo 'test';
+}
+</pre>
+
+== 命名规范 ==
+=== 目录命名 ===
+ 使用字母和数字，区分大小写
+
+=== 类及文件命名 ===
+* 驼峰式，首字母大写
+* 类文件名和类名保持一致
+* Pw系统文件统一加'''“Pw”'''前缀
+* 如：PwTestGood.php文件
+<pre>
+class PwTestGood {
+
+}
+</pre>
+
+=== 函数命名 ===
+* 驼峰式，首字母小写
+<pre>
+public function getUserInfo() {
+
+}
+</pre>
+
+* Controller层的函数，以所传的参数为开头，以“Action”为后缀，如：传递的参数"a=edit",那么相对应的函数应该是: 
+<pre>
+public function editAction() {
+
+}
+</pre>
+
+=== 变量命名 ===
+* 驼峰式，首字母小写
+* 私有变量，前面加“_”前缀
+
+== 安全规范 ==
+=== php文件禁止直接访问 ===
+所有类库文件必须在文件头部书写以下代码，防止文件被直接访问
+<pre>
+defined('WEKIT_VERSION') || exit('Forbidden');
+</pre>
+
+=== dao开发规范 ===
+[[dao开发规范]]
+
+== 数据库设计准则 ==
+===命名规范===
+数据表命名使用26个英文字母、数字和下划线组成，字母统一小写，数字只适应于分表情况。
+
+====数据表命名====
+数据表名称‘pw_’为前缀。实例如下：
+*普通数据表命名：pw_tablename
+*数据表分表命名：pw_tablename1、pw_tablename2、pw_tablename3
+
+论坛数据表命名通用格式为 pw_bbs_tablename（pw前缀+下划线+表名），可以扩展二级命名空间，如果是扩展产品数据表，必须指定二级命名空间，如房产程序数据表pw_house_user，其中“house”为房产数据表的二级命名空间。
+*组件及公用业务前缀：'pw_common_'
+*论坛相关业务:'pw_bbs_'
+''同时必须检查是否存在数据表名重复的情况''
+
+====主键字段命名====
+主键字段名称以业务名+id组成
+
+====数据表字段命名====
+数据表字段尽量避免保留字做字段名，字段名称必须简单易懂，采用英文单词做字段名称，保证字段名称意义明确，如 subject、content 等，字母全部小写。实例如下：
+*标题 subject
+*内容 content
+*发贴时间 postdate
+
+====索引名称命名====
+索引名称以“idx_”为前缀，采用字段名+下划线的形式，如下实例：
+*唯一索引 idx_uid('uid')
+*组合索引 idx_uid_aid('uid','aid')
+
+===字段类型选择===
+数据表字段类型可选范围为数字类型和字符类型，可选枚举类型，具体类型如下:
+
+数字类型：bigint、int、mediumint、smallint、tinyint<br />
+字符类型：varchar、char、text<br />
+枚举类型：enum<br />
+
+''字段类型必须指定长度，特别是字符类型''
+
+====数字类型====
+{| border="1" cellspacing="0" cellpadding="5" align="left"
+! 类型 || 字节 || 最小值(有/无符号) || 最无值(有/无符号)
+|- 
+| tinyint
+| 1
+| -128
+| 127
+|- 
+| 
+| 
+| 0
+| 255
+|- 
+| smallint
+| 2
+| -32768
+| 32767
+|- 
+| 
+| 
+| 0
+| 65535
+
+|- 
+| mediumint
+| 3
+| -8388608
+| 8388607
+|- 
+| 
+| 
+| 0
+| 16777215
+|- 
+| int
+| 4
+| -2147483648
+| 2147483647
+|- 
+| 
+| 
+| 0
+| 4294967295
+|- 
+| bigint
+| 8
+| -9223372036854775808
+| 9223372036854775807
+|- 
+| 
+| 
+| 0
+| 18446744073709551615
+|}
+
+====常见字段使用规范====
+{| border="1" cellspacing="0" cellpadding="5" align="left"  style='clear:both;'
+! <font color='red'>字段</font> || <font color='red'>使用类型</font> ||<font color='red'>备注</font>
+|-
+|主键ID
+|int(10) unsigned
+|长度及类型看需求，如果不会出现负数请加上unsigned
+|-
+|email
+|varchar(80)
+|
+|-
+|url
+|varchar(128)
+|
+|-
+|密码类
+|char(32)
+|定长（加密）
+|-
+|密码盐值类：
+|char(6)
+|定长，长度可根据需求定
+|-
+|时间戳类：
+|int(10) unsigned
+|不需要转变的时间都用时间戳来保存
+|}

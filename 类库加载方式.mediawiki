@@ -1,0 +1,18 @@
+ phpwind9.0的类库加载方式，主要使用了php5的自动加载机制（autoload），根据不同的类库类型，主要方法有：
+== Wind::import ==
+# 框架提供的加载方式，所有类库加载的基础方法
+# 路径别名+相对路径加载 比如 Wind::import('SRV:forum.bo.PwThreadBo')，SRV就是预定义的路径别名，指向/src/service 目录。路径别名可以在/conf/directory.php中配置
+# 使用时加载 相对传统的require方式，该方式的好处是仅仅注册了个路径信息，而不是实时加载文件，文件是在真正用到时加载的
+# 使用import后，通常需要实例化对象，比如 new PwThreadBo()，这个时候才会真正通过autoload机制require文件。
+# 使用手法类似java的import
+# 要注意的是，该方式加载，文件名与类名需保持一致
+== Wekit::load ==
+# 使用Wind::import引入文件，并实例化一个对象。该方式使用单列模式加载，防止重复加载
+# 主要是用来加载Ds、Service等类库
+# 默认预定义路径是SRV，比如 Wekit::load('forum.PwThread')，指的就是SRV:forum.PwThread服务
+== Wekit::loadDao ==
+# 类似Wekit::load
+# 作用是加载Dao
+== Wekit::loadDaoFromMap ==
+# 类似Wekit::load，
+# 加载Dao组合，（Dao装饰者模式的加载器，详情见下节）

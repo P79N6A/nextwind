@@ -1,0 +1,55 @@
+一个独立系统要作为客户端接入WindID,需要作下面的操作
+一：用户模块的修改二：私信模块的修改(如果有) 三：新增通知接口处理文件, 前两部分请参考 [http://www.phpwind.net/read/2865012 教你如何开发WindID客户端],下面主要说说客户端通知接口开发
+
+客户端接口，是多个客户端数据同步的通知接口，在WindID中，所有的通知都由客户端->服务端->其它客户端的方式进行
+
+== 一：通知的类型 ==
+{| class="wikitable"
+|-  
+! 通知名称 !! 通知代码 !!  说明
+|-
+| addUser || 101 || 注册用户 
+|-
+| synLogin || 111 || 同步登录
+|-
+| synLogout || 112 || 同步登出
+|-
+| editUser || 201 || 编辑用户基本信息(用户名，密码，邮箱，安全问题)
+|-
+| editUserInfo || 202 || 编辑用户详细资料
+|-
+| uploadAvatar || 203 || 上传头像
+|-
+| editCredit || 211 || 编辑用户积分
+|-
+| editMessageNum || 222 || 同步用户未读私信数量
+|-
+| deleteUser || 301 || 删除用户
+|-
+| test || 999 || 通讯测试接口
+|}
+
+== 二：通知文件 ==
+在WindID管理后台，添加客户端时，可以指定通知文件的访问地址
+
+== 三：通知内容处理 ==
+1)通知的参数: WindID所有的通知都为以下形式链接：
+   http://www.phpwind.net/windid.php?windidkey=afeac5ea7f5cf33843763dce01d7fd59&operation=999&uid=1&clientid=1&time=1358324236
+其中windidkey由客户端通信密钥、请求时间、客户端ID单向加密生成；
+operation为通知代码，如上面链接，表示是一个测试通知；
+uid为通知的同步对象，WindID的所有同步接口，都需要对这个uid进行相关操作，uid的同步内容，通过WindID的客户端API获取，这样虽然会多一次请求，但可以保证信息的同步性；
+clientid为接收通知的客户端ID
+time 为请求时间
+
+2)通知的安全验证
+  通过客户端的本地配置"客户端ID"(windidconfig.php文件)、“通信密钥”以及上述通知的time通过WindidUtility::appKey生成的加密串与windidkey对比，决定通知的安全性
+  通过获取的time时间与当前时间对比，决定通知的时间有效性
+3)通知的处理
+  通知的operation代码决定怎么处理该通知，需要根据客户端的逻辑对该通知是否处理以及如何处理，
+  通知的uid决定操作对象，如果需要同步，请先通过WindID的api接口执行该UID通知操作相关的内容，比如operation为201,代表编辑用户基本信息，uid为4
+  $api=WindidApi::api('user');
+  $user = $api->getUser(4);
+  客户端再对$user进行相关的编辑操作
+4)通知的返回
+  WindID服务端对发出去的通知只接收 'fail'（失败） 和 'seccess'（成功） 两种状态，请根据操作，决定返回的状态，否则WindID的通知队列管理里，将会对 'fail'（失败）的操作进行重复发送，直到该通知被删除或'seccess'（成功）
+5)phpwind 9.0的通知接口，请参看src\applications\inform\controller里的文件

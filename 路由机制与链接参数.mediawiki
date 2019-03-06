@@ -1,0 +1,18 @@
+ phpwind9.0跟一般框架类似，用的是统一入口的访问机制，即所有请求都是通过访问index.php，然后根据路由机制解析链接参数进行对不同业务的访问，该机制主要细节有：
+== 路由解析 ==
+# 路由机制默认解析参数键值m,c,a，类似链接中的 index.php?'''m'''=bbs&'''c'''=index&'''a'''=run
+# m的值为应用别名，通常含义为按照m分文件夹目录存放，比如controller、template目录等
+# c的值为controller文件名
+# a的值为controller文件中的方法名
+# 按照配置文件 /conf/application.php 中的contoller目录配置项（web-apps.phpwind.modules.pattern.controller-path），那么上诉链接访问的是 /src/applications/bbs/controller/indexController.php 中的run方法。run为默认方法，当访问其他方法时，比如a=read，那么该方法名为readAction。
+
+== 统一的链接生成方法 ==
+# 比如上述链接生成 WindUrlHelper::createUrl('bbs/index/run')
+# 带参数的链接生成 WindUrlHelper::createUrl('bbs/read/run?tid=' . $tid . '&fid=' . $fid)
+# 模板中的链接生成 {@url:bbs/read/run?tid=$tid&fid=$fid}
+
+== 自定义路由 ==
+# 路由是通过组件机制加载的
+# 通过修改 /conf/components.php 中的 router.config.routes 配置选项，你可以自己实现一个路由规则来替换phpwind9.0的路由规则
+
+== 路由开发 ==
